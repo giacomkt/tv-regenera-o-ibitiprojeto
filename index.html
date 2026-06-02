@@ -1,0 +1,1503 @@
+<!DOCTYPE html>
+<html lang="pt-BR" id="html-root">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>Ibiti — Tv Regeneração</title>
+
+  <style>
+    @font-face {
+      font-family: 'Talkback';
+      src: url('Id Visual/1- Talkback-Regular.otf') format('opentype');
+      font-weight: 400; font-display: swap;
+    }
+    @font-face {
+      font-family: 'Montserrat';
+      src: url('Id Visual/Montserrat-Regular.otf') format('opentype');
+      font-weight: 400; font-display: swap;
+    }
+    @font-face {
+      font-family: 'Montserrat';
+      src: url('Id Visual/Montserrat-Medium.otf') format('opentype');
+      font-weight: 500; font-display: swap;
+    }
+    @font-face {
+      font-family: 'Montserrat';
+      src: url('Id Visual/Montserrat-SemiBold.otf') format('opentype');
+      font-weight: 600; font-display: swap;
+    }
+    @font-face {
+      font-family: 'Montserrat';
+      src: url('Id Visual/Montserrat-Bold.otf') format('opentype');
+      font-weight: 700; font-display: swap;
+    }
+  </style>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #ffffff;
+      --panel:       #f5f3ee;
+      --surface:     #eae6dc;
+      --moss:        #5a7a4a;
+      --moss-dark:   #3a5230;
+      --moss-light:  #8aaa7a;
+      --text:        #2a4a1e;
+      --text-sub:    #5a7a4a;
+      --text-sci:    #7a9a6a;
+      --border:      #ddd8cc;
+      --border-moss: #c0d4b0;
+    }
+
+    html {
+      width: 100%; height: 100%;
+      height: -webkit-fill-available;
+    }
+    body {
+      width: 100%; height: 100%;
+      min-height: -webkit-fill-available;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Montserrat', sans-serif;
+      cursor: none;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ── CUSTOM CURSOR ──────────────────────────────────────── */
+    #cursor {
+      position: fixed;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--moss);
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width 0.18s ease, height 0.18s ease, opacity 0.2s ease, background 0.18s ease;
+      mix-blend-mode: multiply;
+      opacity: 0;
+    }
+    #cursor.visible { opacity: 1; }
+    #cursor.hover {
+      width: 22px; height: 22px;
+      background: var(--moss-light);
+    }
+
+    /* ── GRAIN ──────────────────────────────────────────────── */
+    @keyframes grain-drift {
+      0%   { transform: translate(  0%,  0%); }
+      10%  { transform: translate(-3%,  1%); }
+      20%  { transform: translate( 2%, -2%); }
+      30%  { transform: translate(-1%,  3%); }
+      40%  { transform: translate( 3%, -1%); }
+      50%  { transform: translate(-2%,  2%); }
+      60%  { transform: translate( 1%, -3%); }
+      70%  { transform: translate(-3%, -1%); }
+      80%  { transform: translate( 2%,  3%); }
+      90%  { transform: translate(-1%, -2%); }
+      100% { transform: translate(  0%,  0%); }
+    }
+    #grain {
+      position: fixed;
+      width: 200%; height: 200%;
+      top: -50%; left: -50%;
+      pointer-events: none;
+      z-index: 9000;
+      opacity: 0.018;
+      animation: grain-drift 0.35s steps(1) infinite;
+      background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='256' height='256'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/></filter><rect width='256' height='256' filter='url(%23n)'/></svg>");
+    }
+
+    /* ── MAIN LAYOUT ────────────────────────────────────────── */
+    #app {
+      display: flex;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+    }
+
+    /* ── VIDEO — 70% ────────────────────────────────────────── */
+    #video-section {
+      position: relative;
+      flex: 7;
+      background: #000;
+      overflow: hidden;
+    }
+    #player { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    /* Camera label */
+    #video-label {
+      position: absolute;
+      top: 1.5rem; left: 1.75rem;
+      opacity: 0;
+      transition: opacity 0.7s ease;
+      pointer-events: none;
+      z-index: 4;
+    }
+    #video-label.visible { opacity: 1; }
+    #video-label-text {
+      display: inline-block;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.6rem; font-weight: 500;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: rgba(255,255,255,0.85);
+      background: rgba(10,10,8,0.5);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      padding: 0.45rem 0.9rem;
+      border-radius: 0.5rem;
+    }
+
+    /* Species subtitle */
+    #video-subtitle {
+      position: absolute;
+      bottom: 2rem; left: 2.25rem;
+      pointer-events: none;
+      z-index: 4;
+    }
+    #video-sub-name {
+      font-family: 'Talkback', sans-serif;
+      font-size: 2.2rem;
+      color: #fff;
+      line-height: 1;
+      text-shadow: 0 2px 16px rgba(0,0,0,0.55);
+      opacity: 1;
+      transition: opacity 0.35s ease;
+    }
+    #video-sub-sci {
+      font-family: 'Montserrat', sans-serif;
+      font-style: italic;
+      font-weight: 400;
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.7);
+      margin-top: 0.3rem;
+      text-shadow: 0 1px 8px rgba(0,0,0,0.5);
+      opacity: 1;
+      transition: opacity 0.35s ease;
+    }
+
+    #video-section::after {
+      content: '';
+      position: absolute; inset: 0;
+      pointer-events: none;
+      z-index: 2;
+      background:
+        linear-gradient(to right,  rgba(245,243,238,0.2) 0%, transparent 18%),
+        linear-gradient(to top,    rgba(0,0,0,0.38) 0%, transparent 28%);
+    }
+
+    /* ── SPECIES PANEL — 30% ────────────────────────────────── */
+    #species-panel {
+      flex: 3;
+      min-width: 300px; max-width: 400px;
+      display: flex; flex-direction: column;
+      background: var(--panel);
+      border-left: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    /* Panel header */
+    #panel-header {
+      padding: 1.5rem 1.75rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    #panel-header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+    #panel-logo {
+      display: block;
+      max-width: 68%;
+      max-height: 56px;
+      object-fit: contain;
+      object-position: left center;
+    }
+
+    /* Language toggle */
+    #lang-toggle {
+      display: flex;
+      gap: 0.3rem;
+      flex-shrink: 0;
+      margin-top: 0.15rem;
+    }
+    .lang-btn {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.56rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      padding: 0.32rem 0.65rem;
+      border-radius: 0.4rem;
+      border: 1.5px solid var(--border-moss);
+      background: transparent;
+      color: var(--text-sub);
+      transition: all 0.2s;
+    }
+    .lang-btn.active {
+      background: var(--moss);
+      color: #fff;
+      border-color: var(--moss);
+    }
+    .lang-btn:active { opacity: 0.8; }
+
+    .panel-subtitle {
+      font-size: 0.6rem; font-weight: 500;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--text-sub);
+      margin-top: 0.6rem;
+    }
+    .panel-tagline {
+      font-size: 0.65rem; font-weight: 400;
+      color: var(--text-sci);
+      line-height: 1.55;
+      margin-top: 0.45rem;
+    }
+    .panel-tagline strong {
+      font-weight: 600;
+      color: var(--moss);
+    }
+
+    /* Species list */
+    #species-list {
+      flex: 1;
+      overflow-y: auto; overflow-x: hidden;
+      scrollbar-width: none;
+    }
+    #species-list::-webkit-scrollbar { display: none; }
+
+    /* ── SPECIES CARD ───────────────────────────────────────── */
+    @keyframes card-enter {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .species-card {
+      display: flex; gap: 1rem; align-items: flex-start;
+      padding: 1rem 1.75rem;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.2s ease;
+      opacity: 0;
+      animation: card-enter 0.4s ease forwards;
+    }
+    .species-card:last-child { border-bottom: none; }
+    .species-card:hover { background: var(--surface); }
+    .species-card:active { background: var(--border); }
+
+    .species-thumb {
+      width: 60px; height: 60px;
+      object-fit: cover; flex-shrink: 0;
+      border-radius: 0.5rem;
+      background: var(--surface);
+    }
+    .species-thumb-placeholder {
+      width: 60px; height: 60px; flex-shrink: 0;
+      background: var(--surface); border-radius: 0.5rem;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem;
+    }
+    .species-info {
+      flex: 1; display: flex; flex-direction: column;
+      gap: 0.15rem; min-width: 0;
+    }
+    .species-name {
+      font-weight: 600; font-size: 0.88rem;
+      color: var(--text); line-height: 1.2;
+    }
+    .species-sci {
+      font-style: italic; font-weight: 400;
+      font-size: 0.7rem; color: var(--text-sci);
+    }
+    .species-btn {
+      display: inline-block; margin-top: 0.55rem;
+      font-size: 0.58rem; font-weight: 600;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: #fff; background: var(--moss);
+      border: none; padding: 0.42rem 0.9rem;
+      border-radius: 0.5rem;
+      transition: background 0.2s;
+      pointer-events: none;
+    }
+    .species-card:hover .species-btn { background: var(--moss-dark); }
+
+    /* ── PROFILE OVERLAY ────────────────────────────────────── */
+    #species-overlay {
+      position: fixed; inset: 0;
+      z-index: 8000;
+      background: var(--bg);
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.35s ease;
+      overflow: hidden;
+    }
+    #species-overlay.visible { opacity: 1; pointer-events: all; }
+
+    #close-overlay {
+      position: absolute;
+      top: 1rem; right: 1.25rem;
+      z-index: 8001;
+      font-size: 0.58rem; font-weight: 600;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--text-sub);
+      background: rgba(245,243,238,0.96);
+      border: 1px solid var(--border);
+      padding: 0.5rem 1.1rem;
+      border-radius: 0.5rem;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+      transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    }
+    #close-overlay:active { background: var(--surface); color: var(--text); box-shadow: none; }
+
+    /* Profile — two-column, no scroll */
+    #profile-content {
+      width: 100%; height: 100%;
+      overflow: hidden;
+    }
+
+    .profile-layout {
+      display: flex;
+      width: 100%; height: 100%;
+    }
+
+    /* LEFT — hero image */
+    .profile-left {
+      flex: 0 0 45%;
+      position: relative;
+      overflow: hidden;
+      background: var(--surface);
+    }
+    .profile-hero-img {
+      width: 100%; height: 100%;
+      object-fit: cover; display: block;
+    }
+    .profile-left-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(
+        to top,
+        rgba(42,74,30,0.88) 0%,
+        rgba(42,74,30,0.2) 45%,
+        transparent 100%
+      );
+      display: flex; flex-direction: column;
+      justify-content: flex-end;
+      padding: 2rem 2.25rem;
+    }
+    .profile-hero-name {
+      font-family: 'Talkback', sans-serif;
+      font-size: 2.6rem; color: #fff; line-height: 1;
+    }
+    .profile-hero-sci {
+      font-style: italic; font-weight: 400;
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.72);
+      margin-top: 0.35rem;
+    }
+
+    /* RIGHT — facts + carousel */
+    .profile-right {
+      flex: 1;
+      display: flex; flex-direction: column;
+      padding: 3.25rem 2.25rem 1.75rem 2.25rem;
+      overflow: hidden;
+      gap: 1rem;
+    }
+
+    .profile-description {
+      font-size: 0.8rem; font-weight: 400;
+      color: var(--text); line-height: 1.7;
+      flex-shrink: 0;
+    }
+
+    .profile-facts {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .fact-item {
+      background: var(--panel);
+      padding: 0.6rem 0.85rem;
+      display: flex; flex-direction: column; gap: 0.2rem;
+    }
+    .fact-label {
+      font-size: 0.52rem; font-weight: 600;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--text-sci);
+    }
+    .fact-value {
+      font-size: 0.8rem; font-weight: 500;
+      color: var(--text);
+    }
+
+    .profile-services { flex-shrink: 0; }
+    .profile-section-title {
+      font-family: 'Talkback', sans-serif;
+      font-size: 1rem; color: var(--moss-dark);
+      margin-bottom: 0.4rem;
+    }
+    .profile-services p {
+      font-size: 0.78rem; font-weight: 400;
+      color: var(--text); line-height: 1.65;
+    }
+
+    /* Carousel fills remaining space */
+    .profile-gallery {
+      flex: 1;
+      display: flex; flex-direction: column;
+      min-height: 0; gap: 0.6rem;
+    }
+    .carousel-wrap {
+      flex: 1; min-height: 0;
+      position: relative;
+      overflow: hidden;
+      border-radius: 0.5rem;
+      background: var(--surface);
+    }
+    .carousel-track {
+      display: flex; height: 100%;
+      transition: transform 0.4s ease;
+      will-change: transform;
+    }
+    .carousel-item { flex: 0 0 100%; height: 100%; }
+    .carousel-item img,
+    .carousel-item video {
+      width: 100%; height: 100%;
+      object-fit: cover; display: block;
+    }
+    .carousel-btn {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      z-index: 10;
+      font-size: 1.4rem; line-height: 1; color: #fff;
+      background: rgba(42,74,30,0.5);
+      border: none;
+      width: 2.4rem; height: 2.4rem; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      backdrop-filter: blur(4px);
+      transition: background 0.2s;
+    }
+    .carousel-btn:active { background: rgba(42,74,30,0.9); }
+    .carousel-prev { left: 0.6rem; }
+    .carousel-next { right: 0.6rem; }
+    .carousel-dots {
+      display: flex; justify-content: center;
+      gap: 0.45rem; flex-shrink: 0;
+    }
+    .carousel-dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--border-moss);
+      border: none; padding: 0;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .carousel-dot.active { background: var(--moss); transform: scale(1.4); }
+
+    /* ── iPad 11" (2360×1640 @ 2x → ~1180×820 CSS px) ───────── */
+    @media screen and (min-width: 1100px) and (max-width: 1300px) and (orientation: landscape) {
+      #species-panel { min-width: 320px; max-width: 400px; }
+      #video-sub-name { font-size: 2.4rem; }
+      .profile-hero-name { font-size: 2.8rem; }
+      .profile-description { font-size: 0.82rem; }
+      .profile-services p { font-size: 0.8rem; }
+    }
+
+    /* ── RESPONSIVE — portrait / small screens ──────────────── */
+    @media (max-width: 640px), (orientation: portrait) {
+      #app { flex-direction: column; }
+      #video-section { flex: none; height: 55vh; }
+      #species-panel { flex: none; height: 45vh; max-width: 100%; min-width: 0; border-left: none; border-top: 1px solid var(--border); }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="cursor" aria-hidden="true"></div>
+  <div id="grain" aria-hidden="true"></div>
+
+  <div id="app">
+
+    <div id="video-section">
+      <video id="player" autoplay muted playsinline></video>
+      <div id="video-label"><span id="video-label-text"></span></div>
+      <div id="video-subtitle">
+        <div id="video-sub-name"></div>
+        <div id="video-sub-sci"></div>
+      </div>
+    </div>
+
+    <aside id="species-panel">
+      <div id="panel-header">
+        <div id="panel-header-top">
+          <img id="panel-logo" src="Id Visual/Logo 3 - V1 copy.png" alt="Ibiti Regenera">
+          <div id="lang-toggle">
+            <button class="lang-btn active" data-lang="pt">PT</button>
+            <button class="lang-btn" data-lang="en">EN</button>
+          </div>
+        </div>
+        <p class="panel-subtitle" id="panel-subtitle">Conheça nossa fauna</p>
+        <p class="panel-tagline" id="panel-tagline">
+          Rewilding ativo com <strong>+500 espécies</strong> beneficiadas<br>
+          e <strong>1.200 ha</strong> em regeneração na Mata Atlântica.
+        </p>
+      </div>
+      <div id="species-list"></div>
+    </aside>
+
+  </div>
+
+  <div id="species-overlay" aria-hidden="true">
+    <button id="close-overlay">✕&nbsp;&nbsp;Fechar</button>
+    <div id="profile-content"></div>
+  </div>
+
+  <script>
+  // ═══════════════════════════════════════════════════════════════════════════
+  // i18n — strings PT / EN
+  // ═══════════════════════════════════════════════════════════════════════════
+  let lang = 'pt';
+
+  const STRINGS = {
+    pt: {
+      subtitle:    'Conheça nossa fauna',
+      tagline:     'Rewilding ativo com <strong>+500 espécies</strong> beneficiadas<br>e <strong>1.200 ha</strong> em regeneração na Mata Atlântica.',
+      learnMore:   'Saiba mais',
+      close:       '✕  Fechar',
+      ecoServices: 'Serviços Ecossistêmicos',
+      factLabels: {
+        'Comprimento': 'Comprimento',
+        'Peso':        'Peso',
+        'Dieta':       'Dieta',
+        'Hábitat':     'Hábitat',
+        'Hábitos':     'Hábitos',
+        'Status IUCN': 'Status IUCN',
+        'Envergadura': 'Envergadura',
+      },
+    },
+    en: {
+      subtitle:    'Meet our wildlife',
+      tagline:     'Active rewilding with <strong>+500 species</strong> benefited<br>and <strong>1,200 ha</strong> in regeneration in the Atlantic Forest.',
+      learnMore:   'Learn more',
+      close:       '✕  Close',
+      ecoServices: 'Ecosystem Services',
+      factLabels: {
+        'Comprimento': 'Length',
+        'Peso':        'Weight',
+        'Dieta':       'Diet',
+        'Hábitat':     'Habitat',
+        'Hábitos':     'Behavior',
+        'Status IUCN': 'IUCN Status',
+        'Envergadura': 'Wingspan',
+      },
+    },
+  };
+
+  // Fact values auto-translated (diet, habits, status, habitat)
+  const FACT_VALUE_EN = {
+    // Diet
+    'Mamíferos, aves, répteis e anfíbios':   'Mammals, birds, reptiles & amphibians',
+    'Frutas, insetos, vertebrados e carcaças': 'Fruits, insects, vertebrates & carrion',
+    'Onívora':                               'Omnivore',
+    'Frutas, insetos, ovos e vertebrados':   'Fruits, insects, eggs & vertebrates',
+    'Oportunista':                           'Opportunist',
+    'Carnívora':                             'Carnivore',
+    'Frutas, vertebrados, aves e insetos':   'Fruits, vertebrates, birds & insects',
+    'Mamíferos, aves e répteis':             'Mammals, birds & reptiles',
+    'Formigas e cupins':                     'Ants and termites',
+    'Gramíneas, folhas e brotos':            'Grasses, leaves & shoots',
+    'Frutos, sementes e raízes':             'Fruits, seeds & roots',
+    'Frutos, sementes, folhas e flores':     'Fruits, seeds, leaves & flowers',
+    'Frutos, sementes e invertebrados':      'Fruits, seeds & invertebrates',
+    'Folhas, gramíneas, brotos e frutos':    'Leaves, grasses, shoots & fruits',
+    'Mamíferos, aves, répteis e insetos':    'Mammals, birds, reptiles & insects',
+    'Insetos, larvas e invertebrados':       'Insects, larvae & invertebrates',
+    'Insetos, vertebrados, frutos e ovos':   'Insects, vertebrates, fruits & eggs',
+    'Frutos, folhas, flores e brotos':       'Fruits, leaves, flowers & shoots',
+    'Insetos, vertebrados, frutos e sementes': 'Insects, vertebrates, fruits & seeds',
+    'Folhas, frutos e gramíneas':            'Leaves, fruits & grasses',
+    'Frutos, sementes e flores':             'Fruits, seeds & flowers',
+    // Habitat
+    'Mata Atlântica':        'Atlantic Forest',
+    'Cerrado / Ciliar':      'Cerrado / Riparian',
+    'Floresta / Cerrado':    'Forest / Cerrado',
+    'Campos / Bordas':       'Fields / Edges',
+    'Cerrado / Campo':       'Cerrado / Grassland',
+    'Floresta / Campo':      'Forest / Grassland',
+    'Campo / Cerrado':       'Grassland / Cerrado',
+    'Mata Atlântica / Cerrado': 'Atlantic Forest / Cerrado',
+    // Behavior
+    'Noturno, solitário':              'Nocturnal, solitary',
+    'Noturno e crepuscular':           'Nocturnal & crepuscular',
+    'Diurno, gregário':                'Diurnal, gregarious',
+    'Diurno, social':                  'Diurnal, social',
+    'Noturno e arborícola':            'Nocturnal & arboreal',
+    'Crepuscular e diurno':            'Crepuscular & diurnal',
+    'Solitário, diurno':               'Solitary, diurnal',
+    'Diurno e arborícola':             'Diurnal & arboreal',
+    'Crepuscular, solitária':          'Crepuscular, solitary',
+    'Noturno e crepuscular, solitário':'Nocturnal & crepuscular, solitary',
+    'Solitária e noturna':             'Solitary & nocturnal',
+    'Diurno':                          'Diurnal',
+    // IUCN Status
+    'Vulnerável':              'Vulnerable',
+    'Não ameaçado':            'Least Concern',
+    'Pouco preocupante':       'Least Concern',
+    'Quase ameaçado':          'Near Threatened',
+    'Criticamente em perigo':  'Critically Endangered',
+  };
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // VÍDEOS — apenas arquivos existentes na pasta "videos/"
+  // ═══════════════════════════════════════════════════════════════════════════
+  const VIDEOS = [
+    { src: "videos/jaguatirica.mp4",              label: "Câmera Trilha",         labelEn: "Trail Camera",           species: "Jaguatirica",          speciesEn: "Ocelot",                sci: "Leopardus pardalis"      },
+    { src: "videos/Jaguatirica 2.mp4",            label: "Câmera Mata Densa",     labelEn: "Dense Forest Camera",    species: "Jaguatirica",          speciesEn: "Ocelot",                sci: "Leopardus pardalis"      },
+    { src: "videos/Jaguatirica 3.mp4",            label: "Câmera Trilha Norte",   labelEn: "North Trail Camera",     species: "Jaguatirica",          speciesEn: "Ocelot",                sci: "Leopardus pardalis"      },
+    { src: "videos/Jaguatirica 4.mp4",            label: "Câmera Rio",            labelEn: "River Camera",           species: "Jaguatirica",          speciesEn: "Ocelot",                sci: "Leopardus pardalis"      },
+    { src: "videos/Jaguatirica 5.mp4",            label: "Câmera Bambuzal",       labelEn: "Bamboo Grove Camera",    species: "Jaguatirica",          speciesEn: "Ocelot",                sci: "Leopardus pardalis"      },
+    { src: "videos/cachorro-do-mato.mp4",         label: "Câmera Mata Ciliar",    labelEn: "Riparian Camera",        species: "Cachorro-do-mato",     speciesEn: "Crab-eating Fox",       sci: "Cerdocyon thous"         },
+    { src: "videos/Cachorro-do-mato 3.mp4",       label: "Câmera Borda de Mata",  labelEn: "Forest Edge Camera",     species: "Cachorro-do-mato",     speciesEn: "Crab-eating Fox",       sci: "Cerdocyon thous"         },
+    { src: "videos/Cachorro-do-mato 4.mp4",       label: "Câmera Ciliar Sul",     labelEn: "South Riparian Camera",  species: "Cachorro-do-mato",     speciesEn: "Crab-eating Fox",       sci: "Cerdocyon thous"         },
+    { src: "videos/cateto.mp4",                   label: "Câmera Bosque Norte",   labelEn: "North Grove Camera",     species: "Cateto",               speciesEn: "Collared Peccary",      sci: "Pecari tajacu"           },
+    { src: "videos/Cateto 2.mp4",                 label: "Câmera Sub-bosque",     labelEn: "Understory Camera",      species: "Cateto",               speciesEn: "Collared Peccary",      sci: "Pecari tajacu"           },
+    { src: "videos/quati.mp4",                    label: "Câmera Cachoeira",      labelEn: "Waterfall Camera",       species: "Quati",                speciesEn: "South American Coati",  sci: "Nasua nasua"             },
+    { src: "videos/Quati 5.mp4",                  label: "Câmera Bosque",         labelEn: "Grove Camera",           species: "Quati",                speciesEn: "South American Coati",  sci: "Nasua nasua"             },
+    { src: "videos/carcara.mp4",                  label: "Câmera Mirante",        labelEn: "Lookout Camera",         species: "Carcará",              speciesEn: "Southern Caracara",     sci: "Caracara plancus"        },
+    { src: "videos/gato-do-mato-pequeno.mp4",     label: "Câmera Mata Densa",     labelEn: "Dense Forest Camera",    species: "Gato-do-mato-pequeno", speciesEn: "Oncilla",               sci: "Leopardus tigrinus"      },
+    { src: "videos/lobo-guará.mp4",               label: "Câmera Campo Aberto",   labelEn: "Open Field Camera",      species: "Lobo-guará",           speciesEn: "Maned Wolf",            sci: "Chrysocyon brachyurus"   },
+    { src: "videos/onça-parda.mp4",               label: "Câmera Trilha Sul",     labelEn: "South Trail Camera",     species: "Onça-parda",           speciesEn: "Puma",                  sci: "Puma concolor"           },
+    { src: "videos/Onça parda 2.mp4",             label: "Câmera Bosque",         labelEn: "Grove Camera",           species: "Onça-parda",           speciesEn: "Puma",                  sci: "Puma concolor"           },
+    { src: "videos/Onça-parda 2.MP4",             label: "Câmera Mata Fechada",   labelEn: "Dense Forest Camera",    species: "Onça-parda",           speciesEn: "Puma",                  sci: "Puma concolor"           },
+    { src: "videos/Onça-parda 3.mp4",             label: "Câmera Trilha Norte",   labelEn: "North Trail Camera",     species: "Onça-parda",           speciesEn: "Puma",                  sci: "Puma concolor"           },
+    { src: "videos/Onça-parda 4.mp4",             label: "Câmera Ciliar",         labelEn: "Riparian Camera",        species: "Onça-parda",           speciesEn: "Puma",                  sci: "Puma concolor"           },
+    { src: "videos/Onça-parda 5.mp4",             label: "Câmera Cerrado",        labelEn: "Cerrado Camera",         species: "Onça-parda",           speciesEn: "Puma",                  sci: "Puma concolor"           },
+    { src: "videos/Onça-parda 6.mp4",             label: "Câmera Campo",          labelEn: "Field Camera",           species: "Onça-parda",           speciesEn: "Puma",                  sci: "Puma concolor"           },
+    { src: "videos/Onça-parda 7.mp4",             label: "Câmera Rio",            labelEn: "River Camera",           species: "Onça-parda",           speciesEn: "Puma",                  sci: "Puma concolor"           },
+    { src: "videos/tamanduá-mirim.mp4",           label: "Câmera Bosque",         labelEn: "Grove Camera",           species: "Tamanduá-mirim",       speciesEn: "Southern Tamandua",     sci: "Tamandua tetradactyla"   },
+    { src: "videos/Veado 1.mp4",                  label: "Câmera Campo Norte",    labelEn: "North Field Camera",     species: "Veado-campeiro",       speciesEn: "Pampas Deer",           sci: "Ozotoceros bezoarticus"  },
+    { src: "videos/Veado 3..mp4",                 label: "Câmera Cerrado Sul",    labelEn: "South Cerrado Camera",   species: "Veado-campeiro",       speciesEn: "Pampas Deer",           sci: "Ozotoceros bezoarticus"  },
+    { src: "videos/Veado 4.mp4",                  label: "Câmera Pastagem Leste", labelEn: "East Pasture Camera",    species: "Veado-campeiro",       speciesEn: "Pampas Deer",           sci: "Ozotoceros bezoarticus"  },
+    { src: "videos/Paca.mp4",                     label: "Câmera Mata Noturna",   labelEn: "Night Forest Camera",    species: "Paca",                 speciesEn: "Spotted Paca",          sci: "Cuniculus paca"          },
+    { src: "videos/Juriti.mp4",                   label: "Câmera Mata Ciliar",    labelEn: "Riparian Camera",        species: "Juriti",               speciesEn: "White-tipped Dove",     sci: "Leptotila verreauxi"     },
+    { src: "videos/Tapiti.MP4",                   label: "Câmera Sub-bosque",     labelEn: "Understory Camera",      species: "Tapiti",               speciesEn: "Brazilian Cottontail",  sci: "Sylvilagus brasiliensis" },
+    { src: "videos/Tapiti 2.MP4",                 label: "Câmera Borda de Mata",  labelEn: "Forest Edge Camera",     species: "Tapiti",               speciesEn: "Brazilian Cottontail",  sci: "Sylvilagus brasiliensis" },
+    { src: "videos/Jacu.mp4",                     label: "Câmera Mata Ciliar",    labelEn: "Riparian Camera",        species: "Jacu",                 speciesEn: "Dusky-legged Guan",     sci: "Penelope obscura"        },
+    { src: "videos/Jacu 2.mp4",                   label: "Câmera Trilha",         labelEn: "Trail Camera",           species: "Jacu",                 speciesEn: "Dusky-legged Guan",     sci: "Penelope obscura"        },
+    { src: "videos/Muriqui do Norte.mp4",         label: "Câmera Dossel",         labelEn: "Canopy Camera",          species: "Muriqui-do-norte",     speciesEn: "Northern Muriqui",      sci: "Brachyteles hypoxanthus" },
+    { src: "videos/Muriqui do Norte .mp4",        label: "Câmera Mata Alta",      labelEn: "Tall Forest Camera",     species: "Muriqui-do-norte",     speciesEn: "Northern Muriqui",      sci: "Brachyteles hypoxanthus" },
+    { src: "videos/furões vídeo.mp4",             label: "Câmera Campo",          labelEn: "Field Camera",           species: "Furão",                speciesEn: "Lesser Grison",         sci: "Galictis cuja"           },
+    { src: "videos/tatu galinha e filhote.mp4",   label: "Câmera Borda de Mata",  labelEn: "Forest Edge Camera",     species: "Tatu",                 speciesEn: "Nine-banded Armadillo", sci: "Dasypus novemcinctus"    },
+    { src: "videos/tatu galinha estrada.mp4",     label: "Câmera Estrada",        labelEn: "Road Camera",            species: "Tatu",                 speciesEn: "Nine-banded Armadillo", sci: "Dasypus novemcinctus"    },
+  ];
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ESPÉCIES
+  // ═══════════════════════════════════════════════════════════════════════════
+  const SPECIES = [
+    {
+      name: "Jaguatirica", nameEn: "Ocelot",
+      sci:  "Leopardus pardalis",
+      img:  "imagens/Foto de perfil animais/jaguatirica perfil.png",
+      profile: {
+        description:   "Felino de médio porte com pelagem amarelada marcada por manchas e rosetas escuras. Possui corpo alongado, hábitos solitários e predominantemente noturnos. É encontrada em florestas, cerrados e áreas com vegetação densa.",
+        descriptionEn: "Medium-sized feline with yellowish coat marked with dark spots and rosettes. Has an elongated body and predominantly solitary, nocturnal habits. Found in forests, cerrado, and areas with dense vegetation.",
+        facts: [
+          { label: "Comprimento", value: "70 cm – 1 m"          },
+          { label: "Peso",        value: "8–16 kg"              },
+          { label: "Dieta",       value: "Mamíferos, aves, répteis e anfíbios" },
+          { label: "Hábitat",     value: "Mata Atlântica"       },
+          { label: "Hábitos",     value: "Noturno, solitário"   },
+          { label: "Status IUCN", value: "Vulnerável"           },
+        ],
+        services:   "Auxilia no controle populacional de pequenos e médios vertebrados, contribuindo para o equilíbrio das cadeias alimentares. Como predadora de topo em muitos ambientes, mantém a biodiversidade e a estabilidade ecológica dos ecossistemas naturais.",
+        servicesEn: "Helps control populations of small and medium vertebrates, contributing to the balance of food chains. As a top predator in many environments, it maintains biodiversity and ecological stability in natural ecosystems.",
+        media: [
+          { type: "video", src: "videos/jaguatirica.mp4"       },
+          { type: "video", src: "videos/Jaguatirica 2.mp4"     },
+          { type: "video", src: "videos/Jaguatirica 3.mp4"     },
+          { type: "video", src: "videos/Jaguatirica 4.mp4"     },
+          { type: "video", src: "videos/Jaguatirica 5.mp4"     },
+        ],
+      },
+    },
+    {
+      name: "Cachorro-do-mato", nameEn: "Crab-eating Fox",
+      sci:  "Cerdocyon thous",
+      img:  "imagens/Foto de perfil animais/cachorro do mato perfil.jpeg",
+      profile: {
+        description:   "Mamífero de porte médio com pelagem acinzentada ou marrom e focinho alongado. Possui hábitos predominantemente noturnos e grande capacidade de adaptação, ocorrendo em cerrado, matas ciliares, campos e ambientes alterados.",
+        descriptionEn: "Medium-sized mammal with grayish or brown coat and an elongated snout. Has predominantly nocturnal habits and great adaptability, occurring in cerrado, riparian forests, grasslands, and disturbed environments.",
+        facts: [
+          { label: "Comprimento", value: "60–90 cm"                              },
+          { label: "Peso",        value: "4–8 kg"                                },
+          { label: "Dieta",       value: "Frutas, insetos, vertebrados e carcaças" },
+          { label: "Hábitat",     value: "Cerrado / Ciliar"                      },
+          { label: "Hábitos",     value: "Noturno e crepuscular"                 },
+          { label: "Status IUCN", value: "Não ameaçado"                          },
+        ],
+        services:   "Desempenha importante função ecológica como dispersor de sementes e controlador de populações de pequenos animais e insetos. Por possuir dieta variada, contribui para o equilíbrio ecológico e a ciclagem de nutrientes nos ambientes em que vive.",
+        servicesEn: "Plays an important ecological role as a seed disperser and controller of small animal and insect populations. Its varied diet contributes to ecological balance and nutrient cycling in the environments it inhabits.",
+        media: [
+          { type: "video", src: "videos/cachorro-do-mato.mp4"     },
+          { type: "video", src: "videos/Cachorro-do-mato 3.mp4"   },
+          { type: "video", src: "videos/Cachorro-do-mato 4.mp4"   },
+        ],
+      },
+    },
+    {
+      name: "Cateto", nameEn: "Collared Peccary",
+      sci:  "Pecari tajacu",
+      img:  "imagens/Foto de perfil animais/cateto perfil.png",
+      profile: {
+        description:   "Mamífero social que vive em grupos coesos pelo sub-bosque. Prima selvagem do porco doméstico, comunica-se por sons guturais e secreções de glândulas dorsais únicas. Presença marcante e essencial no ecossistema.",
+        descriptionEn: "Social mammal living in cohesive groups through the understory. A wild cousin of the domestic pig, it communicates through guttural sounds and secretions from unique dorsal glands. A striking and essential presence in the ecosystem.",
+        facts: [
+          { label: "Comprimento", value: "75–100 cm"          },
+          { label: "Peso",        value: "15–30 kg"           },
+          { label: "Dieta",       value: "Onívora"            },
+          { label: "Hábitat",     value: "Floresta / Cerrado" },
+          { label: "Hábitos",     value: "Diurno, gregário"   },
+          { label: "Status IUCN", value: "Não ameaçado"       },
+        ],
+        services:   "Engenheiro do ecossistema: ao cavar o solo em busca de raízes, aera a terra e cria microhabitats para germinação. Como presa, sustenta onças e pumas da reserva.",
+        servicesEn: "Ecosystem engineer: by digging the soil in search of roots, it aerates the earth and creates microhabitats for germination. As prey, it sustains the jaguarundis and pumas of the reserve.",
+        media: [
+          { type: "video", src: "videos/cateto.mp4"     },
+          { type: "video", src: "videos/Cateto 2.mp4"   },
+        ],
+      },
+    },
+    {
+      name: "Quati", nameEn: "South American Coati",
+      sci:  "Nasua nasua",
+      img:  "imagens/Foto de perfil animais/quati perfil.png",
+      profile: {
+        description:   "Mamífero de porte médio com corpo alongado, focinho comprido e cauda longa com anéis escuros. Pelagem geralmente marrom ou acinzentada. Diurno e gregário, fêmeas e filhotes varrem o chão florestal em grupos animados.",
+        descriptionEn: "Medium-sized mammal with an elongated body, long snout, and a long tail with dark rings. Usually brown or grayish coat. Diurnal and gregarious, females and young sweep the forest floor in lively groups.",
+        facts: [
+          { label: "Comprimento", value: "40–70 cm"                              },
+          { label: "Peso",        value: "3–7 kg"                                },
+          { label: "Dieta",       value: "Frutas, insetos, ovos e vertebrados"   },
+          { label: "Hábitat",     value: "Mata Atlântica"                        },
+          { label: "Hábitos",     value: "Diurno, social"                        },
+          { label: "Status IUCN", value: "Não ameaçado"                          },
+        ],
+        services:   "Atua como dispersor de sementes, contribuindo para a regeneração das florestas. Ao revirar o folhiço, aerifica o solo e auxilia na ciclagem de nutrientes, mantendo o equilíbrio ecológico dos ambientes.",
+        servicesEn: "Acts as a seed disperser, contributing to forest regeneration. By turning over leaf litter, it aerates the soil and aids in nutrient cycling, maintaining the ecological balance of the habitats it occupies.",
+        media: [
+          { type: "video", src: "videos/quati.mp4"   },
+          { type: "video", src: "videos/Quati 5.mp4" },
+        ],
+      },
+    },
+    {
+      name: "Carcará", nameEn: "Southern Caracara",
+      sci:  "Caracara plancus",
+      img:  "imagens/Foto de perfil animais/carcará perfil.png",
+      profile: {
+        description:   "Falconídeo territorial e inteligente, igualmente à vontade no ar e no chão. Perambula com passo deliberado em busca de oportunidades, dominando outros necrófagos com assertividade. Um dos rapinantes mais versáteis das Américas.",
+        descriptionEn: "Territorial and intelligent falconid, equally at ease in the air and on the ground. Walks deliberately in search of opportunities, dominating other scavengers assertively. One of the most versatile raptors in the Americas.",
+        facts: [
+          { label: "Comprimento", value: "50–60 cm"       },
+          { label: "Envergadura", value: "1,0–1,2 m"      },
+          { label: "Peso",        value: "0,9–1,6 kg"     },
+          { label: "Dieta",       value: "Oportunista"    },
+          { label: "Hábitat",     value: "Campos / Bordas"},
+          { label: "Status IUCN", value: "Não ameaçado"   },
+        ],
+        services:   "Necrófago e predador oportunista, acelera a decomposição de carcaças reduzindo a proliferação de patógenos. Atua em múltiplos níveis da cadeia trófica, conferindo resiliência ao ecossistema.",
+        servicesEn: "Scavenger and opportunistic predator, it accelerates the decomposition of carcasses, reducing the spread of pathogens. Acts at multiple levels of the food chain, conferring resilience to the ecosystem.",
+        media: [
+          { type: "video", src: "videos/carcara.mp4" },
+        ],
+      },
+    },
+    {
+      name: "Gato-do-mato-pequeno", nameEn: "Oncilla",
+      sci:  "Leopardus tigrinus",
+      img:  "imagens/Foto de perfil animais/gato do mato pequeno perfil.png",
+      profile: {
+        description:   "O menor felino manchado da Mata Atlântica. Extremamente esquivo e noturno, é raramente avistado. Suas manchas finas e seu porte compacto revelam um predador especializado em pequenas presas da densa vegetação.",
+        descriptionEn: "The smallest spotted feline of the Atlantic Forest. Extremely elusive and nocturnal, it is rarely spotted. Its fine spots and compact size reveal a predator specialized in small prey within dense vegetation.",
+        facts: [
+          { label: "Comprimento", value: "40–65 cm"           },
+          { label: "Peso",        value: "1,5–3,5 kg"         },
+          { label: "Dieta",       value: "Carnívora"          },
+          { label: "Hábitat",     value: "Mata Atlântica"     },
+          { label: "Hábitos",     value: "Noturno, solitário" },
+          { label: "Status IUCN", value: "Vulnerável"         },
+        ],
+        services:   "Controla populações de pequenos roedores e aves, regulando a base da cadeia alimentar. Sua raridade o torna indicador crítico da integridade dos remanescentes de Mata Atlântica.",
+        servicesEn: "Controls populations of small rodents and birds, regulating the base of the food chain. Its rarity makes it a critical indicator of the integrity of remaining Atlantic Forest fragments.",
+        media: [
+          { type: "video", src: "videos/gato-do-mato-pequeno.mp4" },
+        ],
+      },
+    },
+    {
+      name: "Lobo-guará", nameEn: "Maned Wolf",
+      sci:  "Chrysocyon brachyurus",
+      img:  "imagens/Foto de perfil animais/lobo guará perfil.png",
+      profile: {
+        description:   "Maior canídeo da América do Sul, com pernas longas, pelagem avermelhada e crina escura na região do pescoço. Solitário e crepuscular, percorre vastos territórios de cerrado e campos em busca de frutos e pequenas presas.",
+        descriptionEn: "The largest canid in South America, with long legs, reddish coat, and a dark mane on the neck. Solitary and crepuscular, it roams vast territories of cerrado and grasslands in search of fruits and small prey.",
+        facts: [
+          { label: "Comprimento", value: "95 cm – 1,3 m"                     },
+          { label: "Peso",        value: "20–30 kg"                           },
+          { label: "Dieta",       value: "Frutas, vertebrados, aves e insetos"},
+          { label: "Hábitat",     value: "Cerrado / Campo"                    },
+          { label: "Hábitos",     value: "Noturno e crepuscular, solitário"   },
+          { label: "Status IUCN", value: "Vulnerável"                         },
+        ],
+        services:   "Principal dispersor do lobeira (Solanum lycocarpum), contribuindo diretamente para a regeneração do cerrado. Também auxilia no controle de pequenos animais, mantendo o equilíbrio ecológico dos ambientes onde vive.",
+        servicesEn: "The primary disperser of the wolf apple (Solanum lycocarpum), directly contributing to cerrado regeneration. Also helps control small animals, maintaining the ecological balance of the environments it inhabits.",
+        media: [
+          { type: "image", src: "imagens/Fotos do Carrossel/lobo guará carrossel.png"   },
+          { type: "image", src: "imagens/Fotos do Carrossel/lobo guará carrossel 2.png" },
+          { type: "video", src: "videos/lobo-guará.mp4"   },
+        ],
+      },
+    },
+    {
+      name: "Onça-parda", nameEn: "Puma",
+      sci:  "Puma concolor",
+      img:  "imagens/Foto de perfil animais/onça parda perfil.png",
+      profile: {
+        description:   "Felino de grande porte com pelagem uniforme em tons de marrom ou acinzentado e corpo musculoso. Possui grande capacidade de adaptação, ocorrendo em florestas, cerrados e áreas montanhosas com igual maestria.",
+        descriptionEn: "Large feline with a uniform brown or grayish coat and a muscular body. Has great adaptability, occurring in forests, cerrado, and mountainous areas with equal mastery.",
+        facts: [
+          { label: "Comprimento", value: "1–2 m"                      },
+          { label: "Peso",        value: "35–80 kg"                   },
+          { label: "Dieta",       value: "Mamíferos, aves e répteis"  },
+          { label: "Hábitat",     value: "Floresta / Campo"           },
+          { label: "Hábitos",     value: "Solitária e noturna"        },
+          { label: "Status IUCN", value: "Pouco preocupante"          },
+        ],
+        services:   "Predadora de topo, controla populações de herbívoros como veados e capivaras, contribuindo para o equilíbrio ecológico. Sua presença é considerada um importante indicador da conservação dos ecossistemas naturais.",
+        servicesEn: "Top predator, it controls populations of herbivores such as deer and capybaras, contributing to ecological balance. Its presence is considered an important indicator of the conservation of natural ecosystems.",
+        media: [
+          { type: "video", src: "videos/onça-parda.mp4"     },
+          { type: "video", src: "videos/Onça-parda 2.MP4"   },
+          { type: "video", src: "videos/Onça-parda 3.mp4"   },
+          { type: "video", src: "videos/Onça-parda 4.mp4"   },
+          { type: "video", src: "videos/Onça-parda 5.mp4"   },
+          { type: "video", src: "videos/Onça-parda 6.mp4"   },
+          { type: "video", src: "videos/Onça-parda 7.mp4"   },
+        ],
+      },
+    },
+    {
+      name: "Tamanduá-mirim", nameEn: "Southern Tamandua",
+      sci:  "Tamandua tetradactyla",
+      img:  "imagens/Foto de perfil animais/tamanduá mirim perfil.png",
+      profile: {
+        description:   "Mamífero de médio porte com pelagem amarelada e uma faixa preta característica que lembra um colete. Possui focinho alongado, língua comprida e pegajosa, além de garras fortes para abrir ninhos de formigas e cupins.",
+        descriptionEn: "Medium-sized mammal with yellowish coat and a characteristic black band resembling a vest. Has an elongated snout, long sticky tongue, and strong claws for opening ant and termite nests.",
+        facts: [
+          { label: "Comprimento", value: "80 cm – 1,4 m"       },
+          { label: "Peso",        value: "3–8 kg"              },
+          { label: "Dieta",       value: "Formigas e cupins"   },
+          { label: "Hábitat",     value: "Floresta / Cerrado"  },
+          { label: "Hábitos",     value: "Noturno e arborícola"},
+          { label: "Status IUCN", value: "Pouco preocupante"   },
+        ],
+        services:   "Controla populações de formigas e cupins, ajudando no equilíbrio natural dos ecossistemas. Um único indivíduo consome até 9.000 insetos por dia. Sua presença indica a conservação de ambientes florestais com disponibilidade de alimento e abrigo.",
+        servicesEn: "Controls populations of ants and termites, helping maintain the natural balance of ecosystems. A single individual consumes up to 9,000 insects per day. Its presence indicates the conservation of forested environments with available food and shelter.",
+        media: [
+          { type: "video", src: "videos/tamanduá-mirim.mp4" },
+        ],
+      },
+    },
+    {
+      name: "Veado-campeiro", nameEn: "Pampas Deer",
+      sci:  "Ozotoceros bezoarticus",
+      img:  "imagens/Foto de perfil animais/veado perfil.png",
+      profile: {
+        description:   "Mamífero de porte médio com pelagem castanha clara e regiões inferiores esbranquiçadas. Os machos possuem galhadas ramificadas renovadas anualmente. Habita áreas abertas como campos e cerrados, sendo mais ativo ao amanhecer e entardecer.",
+        descriptionEn: "Medium-sized mammal with light brown coat and whitish underparts. Males have branched antlers renewed annually. Inhabits open areas such as grasslands and cerrado, being most active at dawn and dusk.",
+        facts: [
+          { label: "Comprimento", value: "1–1,5 m"                        },
+          { label: "Peso",        value: "20–40 kg"                       },
+          { label: "Dieta",       value: "Gramíneas, folhas e brotos"     },
+          { label: "Hábitat",     value: "Campo / Cerrado"                },
+          { label: "Hábitos",     value: "Crepuscular e diurno"           },
+          { label: "Status IUCN", value: "Quase ameaçado"                 },
+        ],
+        services:   "Atua na dispersão de sementes e na manutenção da dinâmica da vegetação nativa, contribuindo para o equilíbrio de campos e savanas. Suas fezes enriquecem o solo e serve de presa para grandes predadores como a onça-parda.",
+        servicesEn: "Contributes to seed dispersal and the dynamics of native vegetation, supporting the balance of grasslands and savannas. Its dung enriches the soil and it serves as prey for large predators such as the puma.",
+        media: [
+          { type: "video", src: "videos/Veado 1.mp4"   },
+          { type: "video", src: "videos/Veado 3..mp4"  },
+          { type: "video", src: "videos/Veado 4.mp4"   },
+        ],
+      },
+    },
+    {
+      name: "Paca", nameEn: "Spotted Paca",
+      sci:  "Cuniculus paca",
+      img:  "imagens/Foto de perfil animais/paca perfil.png",
+      profile: {
+        description:   "Grande roedor da Mata Atlântica com pelagem marrom-avermelhada marcada por fileiras de manchas brancas características nos flancos. Corpo robusto, excelente nadadora, utiliza cursos d'água como rota de fuga. Hábitos solitários e estritamente noturnos.",
+        descriptionEn: "Large rodent of the Atlantic Forest with reddish-brown coat marked by characteristic rows of white spots on the flanks. Robust body and an excellent swimmer, it uses waterways as escape routes. Strictly nocturnal and solitary.",
+        facts: [
+          { label: "Comprimento", value: "60–77 cm"           },
+          { label: "Peso",        value: "6–12 kg"            },
+          { label: "Dieta",       value: "Frutos, sementes e raízes" },
+          { label: "Hábitat",     value: "Mata Atlântica"     },
+          { label: "Hábitos",     value: "Noturno, solitário" },
+          { label: "Status IUCN", value: "Pouco preocupante"  },
+        ],
+        services:   "Dispersora essencial de grandes sementes que poucos animais conseguem processar, contribuindo para a regeneração florestal. Suas tocas cavadas no solo servem de abrigo para diversas outras espécies, sendo um engenheiro do ecossistema.",
+        servicesEn: "Essential disperser of large seeds that few animals can process, contributing to forest regeneration. Its burrows dug in the soil serve as shelter for many other species, making it a true ecosystem engineer.",
+        media: [
+          { type: "video", src: "videos/Paca.mp4" },
+        ],
+      },
+    },
+    {
+      name: "Jacu", nameEn: "Dusky-legged Guan",
+      sci:  "Penelope obscura",
+      img:  "imagens/Foto de perfil animais/jacú perfil.png",
+      profile: {
+        description:   "Ave de grande porte com plumagem escura e brilho esverdeado nas penas. Possui cauda longa, pernas fortes e vocalização característica, sendo frequentemente encontrada em bordas de mata e florestas. Vive em árvores e desce ao solo para se alimentar.",
+        descriptionEn: "Large bird with dark plumage and a greenish sheen on the feathers. Has a long tail, strong legs, and a characteristic vocalization, frequently found at forest edges and in woodlands. Lives in trees and descends to the ground to feed.",
+        facts: [
+          { label: "Comprimento", value: "65–75 cm"                         },
+          { label: "Peso",        value: "1–1,5 kg"                         },
+          { label: "Dieta",       value: "Frutos, sementes, folhas e flores"},
+          { label: "Hábitat",     value: "Mata Atlântica"                   },
+          { label: "Hábitos",     value: "Diurno"                           },
+          { label: "Status IUCN", value: "Pouco preocupante"                },
+        ],
+        services:   "Dispersor de sementes essencial para a regeneração natural das florestas. Muitas espécies vegetais dependem de aves frugívoras como o jacu para espalhar suas sementes e manter a diversidade vegetal dos ecossistemas.",
+        servicesEn: "Essential seed disperser for the natural regeneration of forests. Many plant species depend on frugivorous birds like the guan to spread their seeds and maintain the plant diversity of ecosystems.",
+        media: [
+          { type: "image", src: "imagens/Fotos do Carrossel/jacú carrossel.png"   },
+          { type: "image", src: "imagens/Fotos do Carrossel/jacú carrossel 2.png" },
+          { type: "video", src: "videos/Jacu.mp4"   },
+          { type: "video", src: "videos/Jacu 2.mp4" },
+        ],
+      },
+    },
+    {
+      name: "Juriti", nameEn: "White-tipped Dove",
+      sci:  "Leptotila verreauxi",
+      img:  "imagens/Foto de perfil animais/juriti perfil.png",
+      profile: {
+        description:   "Ave de porte médio com plumagem marrom-clara e peito em tom rosado suave. Possui voo rápido e baixo, sendo frequentemente observada caminhando pelo chão em busca de alimento. Vive em áreas florestais, cerrados e ambientes arborizados.",
+        descriptionEn: "Medium-sized bird with light brown plumage and a soft pinkish chest. Has a fast, low flight and is frequently observed walking on the ground in search of food. Lives in forested areas, cerrado, and wooded environments.",
+        facts: [
+          { label: "Comprimento", value: "24–30 cm"                              },
+          { label: "Peso",        value: "150–250 g"                             },
+          { label: "Dieta",       value: "Frutos, sementes e invertebrados"      },
+          { label: "Hábitat",     value: "Mata Atlântica"                        },
+          { label: "Hábitos",     value: "Diurno"                                },
+          { label: "Status IUCN", value: "Não ameaçado"                          },
+        ],
+        services:   "Atua na dispersão de sementes, contribuindo para a regeneração natural das florestas e a manutenção da diversidade vegetal. Também participa da cadeia alimentar, servindo de alimento para predadores naturais.",
+        servicesEn: "Contributes to seed dispersal, supporting natural forest regeneration and the maintenance of plant diversity. Also participates in the food chain, serving as prey for natural predators.",
+        media: [
+          { type: "video", src: "videos/Juriti.mp4" },
+        ],
+      },
+    },
+    {
+      name: "Tapiti", nameEn: "Brazilian Cottontail",
+      sci:  "Sylvilagus brasiliensis",
+      img:  "imagens/Foto de perfil animais/tapiti perfil.png",
+      profile: {
+        description:   "Pequeno mamífero semelhante a um coelho, com pelagem marrom-acinzentada, orelhas curtas e cauda pequena. Vive em áreas de vegetação densa, campos e bordas de mata, com hábitos noturnos e solitários.",
+        descriptionEn: "Small mammal resembling a rabbit, with grayish-brown coat, short ears, and a small tail. Lives in areas of dense vegetation, grasslands, and forest edges, with nocturnal and solitary habits.",
+        facts: [
+          { label: "Comprimento", value: "30–40 cm"                       },
+          { label: "Peso",        value: "800 g – 1,5 kg"                 },
+          { label: "Dieta",       value: "Folhas, gramíneas, brotos e frutos" },
+          { label: "Hábitat",     value: "Floresta / Cerrado"             },
+          { label: "Hábitos",     value: "Noturno, solitário"             },
+          { label: "Status IUCN", value: "Pouco preocupante"              },
+        ],
+        services:   "Atua como consumidor de vegetação e dispersor de sementes, auxiliando na dinâmica das plantas nativas. Também é fonte de alimento para diversos predadores, contribuindo para o equilíbrio das cadeias alimentares nos ecossistemas naturais.",
+        servicesEn: "Acts as a vegetation consumer and seed disperser, aiding the dynamics of native plants. Also serves as a food source for various predators, contributing to the balance of food chains in natural ecosystems.",
+        media: [
+          { type: "video", src: "videos/Tapiti.MP4"   },
+          { type: "video", src: "videos/Tapiti 2.MP4" },
+        ],
+      },
+    },
+    {
+      name: "Furão", nameEn: "Lesser Grison",
+      sci:  "Galictis cuja",
+      img:  "imagens/Foto de perfil animais/furão perfil.png",
+      profile: {
+        description:   "Mamífero carnívoro de corpo alongado, patas curtas e pelagem com coloração escura na parte inferior e acinzentada no dorso. Possui comportamento ágil e grande habilidade para caçar, sendo encontrado em campos, cerrados e bordas de florestas.",
+        descriptionEn: "Carnivorous mammal with an elongated body, short legs, and coat with dark coloring on the lower parts and grayish on the back. Agile and skilled hunter, found in grasslands, cerrado, and forest edges.",
+        facts: [
+          { label: "Comprimento", value: "45–70 cm"                              },
+          { label: "Peso",        value: "1–3 kg"                                },
+          { label: "Dieta",       value: "Mamíferos, aves, répteis e insetos"    },
+          { label: "Hábitat",     value: "Campo / Cerrado"                       },
+          { label: "Hábitos",     value: "Solitário, diurno"                     },
+          { label: "Status IUCN", value: "Pouco preocupante"                     },
+        ],
+        services:   "Auxilia no controle populacional de pequenos vertebrados e insetos, ajudando a manter o equilíbrio das cadeias alimentares. Por ocupar posição intermediária na cadeia trófica, também serve de alimento para predadores maiores.",
+        servicesEn: "Helps control populations of small vertebrates and insects, maintaining the balance of food chains. By occupying an intermediate position in the food chain, it also serves as prey for larger predators.",
+        media: [
+          { type: "video", src: "videos/furões vídeo.mp4" },
+        ],
+      },
+    },
+    {
+      name: "Tatu", nameEn: "Nine-banded Armadillo",
+      sci:  "Dasypus novemcinctus",
+      img:  "imagens/Foto de perfil animais/tatu galinha perfil.png",
+      profile: {
+        description:   "Mamífero recoberto por placas ósseas móveis que formam uma carapaça resistente. Possui focinho alongado, patas fortes com garras adaptadas para escavação e hábitos noturnos. Vive em tocas subterrâneas em florestas, cerrados e áreas abertas.",
+        descriptionEn: "Mammal covered by mobile bony plates forming a resistant shell. Has an elongated snout, strong legs with claws adapted for digging, and nocturnal habits. Lives in underground burrows in forests, cerrado, and open areas.",
+        facts: [
+          { label: "Comprimento", value: "40–60 cm"                              },
+          { label: "Peso",        value: "3–6 kg"                                },
+          { label: "Dieta",       value: "Insetos, larvas e invertebrados"       },
+          { label: "Hábitat",     value: "Floresta / Cerrado"                    },
+          { label: "Hábitos",     value: "Noturno, solitário"                    },
+          { label: "Status IUCN", value: "Pouco preocupante"                     },
+        ],
+        services:   "Revolve e aera o solo durante a escavação de tocas e busca por alimento, favorecendo a ciclagem de nutrientes. Suas tocas servem de abrigo para diversas outras espécies, contribuindo para a biodiversidade dos ecossistemas.",
+        servicesEn: "Turns over and aerates the soil while digging burrows and searching for food, promoting nutrient cycling. Its burrows serve as shelter for many other species, contributing to ecosystem biodiversity.",
+        media: [
+          { type: "video", src: "videos/tatu galinha e filhote.mp4" },
+          { type: "video", src: "videos/tatu galinha estrada.mp4"   },
+        ],
+      },
+    },
+    {
+      name: "Muriqui-do-norte", nameEn: "Northern Muriqui",
+      sci:  "Brachyteles hypoxanthus",
+      img:  "imagens/Foto de perfil animais/Muriqui-do-norte perfil.png",
+      profile: {
+        description:   "Maior primata das Américas, com corpo esguio, membros longos e cauda preênsil utilizada para locomoção entre as árvores. Possui pelagem marrom-clara a acinzentada e comportamento altamente social, vivendo em grupos nas florestas da Mata Atlântica.",
+        descriptionEn: "The largest primate of the Americas, with a slender body, long limbs, and a prehensile tail used for locomotion through the trees. Has light brown to grayish coat and highly social behavior, living in groups in the Atlantic Forest.",
+        facts: [
+          { label: "Comprimento", value: "45–75 cm"                      },
+          { label: "Peso",        value: "9–15 kg"                       },
+          { label: "Dieta",       value: "Frutos, folhas, flores e brotos"},
+          { label: "Hábitat",     value: "Mata Atlântica"                 },
+          { label: "Hábitos",     value: "Diurno e arborícola"            },
+          { label: "Status IUCN", value: "Criticamente em perigo"         },
+        ],
+        services:   "Exerce papel fundamental na dispersão de sementes, contribuindo para a regeneração e diversidade das florestas da Mata Atlântica. É uma espécie-chave para a conservação desse bioma e um importante indicador da qualidade ambiental.",
+        servicesEn: "Plays a fundamental role in seed dispersal, contributing to the regeneration and diversity of Atlantic Forest woodlands. It is a keystone species for the conservation of this biome and an important indicator of environmental quality.",
+        media: [
+          { type: "image", src: "imagens/Fotos do Carrossel/muriqui-do-norte carrossel 1.png"  },
+          { type: "image", src: "imagens/Fotos do Carrossel/muriqui-do-norte carrossel 2.png"  },
+          { type: "image", src: "imagens/Fotos do Carrossel/muriqui-do-norte carrossel 3.png"  },
+          { type: "image", src: "imagens/Fotos do Carrossel/muriqui-do-norte carrossel 5.png"  },
+          { type: "image", src: "imagens/Fotos do Carrossel/muriqui-do-norte carrossel 6.png"  },
+          { type: "image", src: "imagens/Fotos do Carrossel/muriqui-do-norte carrossel 7.png"  },
+          { type: "image", src: "imagens/Fotos do Carrossel/muriqui-do-norte carrossel 8.png"  },
+          { type: "image", src: "imagens/Fotos do Carrossel/muriqui-do-norte carrossel 9.png"  },
+          { type: "image", src: "imagens/Fotos do Carrossel/muriqui-do-norte carrossel 10.png" },
+          { type: "video", src: "videos/Muriqui do Norte.mp4"  },
+          { type: "video", src: "videos/Muriqui do Norte .mp4" },
+        ],
+      },
+    },
+    {
+      name: "Siriema", nameEn: "Red-legged Seriema",
+      sci:  "Cariama cristata",
+      img:  "imagens/Foto de perfil animais/siriema perfil.png",
+      profile: {
+        description:   "Ave de grande porte com pernas longas, plumagem acinzentada e uma pequena crista de penas na cabeça. Vive em áreas abertas, campos e cerrados, sendo conhecida por sua vocalização forte e característica. Passa grande parte do tempo caminhando pelo solo.",
+        descriptionEn: "Large bird with long legs, grayish plumage, and a small feathered crest on the head. Lives in open areas, grasslands, and cerrado, known for its loud and characteristic vocalization. Spends most of its time walking on the ground.",
+        facts: [
+          { label: "Comprimento", value: "75–90 cm"                               },
+          { label: "Peso",        value: "1,2–1,8 kg"                             },
+          { label: "Dieta",       value: "Insetos, vertebrados, frutos e sementes"},
+          { label: "Hábitat",     value: "Campo / Cerrado"                        },
+          { label: "Hábitos",     value: "Diurno"                                 },
+          { label: "Status IUCN", value: "Pouco preocupante"                      },
+        ],
+        services:   "Controla populações de insetos e pequenos animais, ajudando no equilíbrio ecológico dos ambientes naturais. Também participa da dispersão de sementes e é importante componente da fauna de áreas abertas do Brasil.",
+        servicesEn: "Controls insect and small animal populations, aiding ecological balance in natural environments. Also participates in seed dispersal and is an important component of Brazil's open-area fauna.",
+        media: [
+          { type: "image", src: "imagens/Fotos do Carrossel/siriema 1 carrossel.png" },
+          { type: "image", src: "imagens/Fotos do Carrossel/siriema 2 carrossel.png" },
+          { type: "image", src: "imagens/Fotos do Carrossel/siriema 3 carrossel.png" },
+        ],
+      },
+    },
+    {
+      name: "Jaritataca", nameEn: "Striped Hog-nosed Skunk",
+      sci:  "Conepatus semistriatus",
+      img:  "imagens/Foto de perfil animais/jaritataca perfil.png",
+      profile: {
+        description:   "Mamífero de pequeno a médio porte com pelagem preta marcada por uma faixa branca da cabeça até a cauda. Possui cauda longa e muito peluda, além de glândulas que liberam odor forte como mecanismo de defesa contra predadores.",
+        descriptionEn: "Small to medium-sized mammal with black coat marked by a white stripe from head to tail. Has a long, very bushy tail and glands that release a strong odor as a defense mechanism against predators.",
+        facts: [
+          { label: "Comprimento", value: "35–50 cm"                              },
+          { label: "Peso",        value: "1–4 kg"                                },
+          { label: "Dieta",       value: "Insetos, vertebrados, frutos e ovos"   },
+          { label: "Hábitat",     value: "Campo / Cerrado"                       },
+          { label: "Hábitos",     value: "Noturno, solitário"                    },
+          { label: "Status IUCN", value: "Pouco preocupante"                     },
+        ],
+        services:   "Auxilia no controle populacional de insetos e pequenos animais, contribuindo para o equilíbrio das cadeias alimentares. Também auxilia na dispersão de sementes ao consumir frutos em ambientes naturais.",
+        servicesEn: "Helps control insect and small animal populations, contributing to the balance of food chains. Also aids in seed dispersal by consuming fruits in natural environments.",
+        media: [
+          { type: "image", src: "imagens/Foto de perfil animais/jaritataca perfil.png" },
+        ],
+      },
+    },
+    {
+      name: "Anta", nameEn: "South American Tapir",
+      sci:  "Tapirus terrestris",
+      img:  "imagens/Foto de perfil animais/anta perfil.png",
+      profile: {
+        description:   "Maior mamífero terrestre da América do Sul. Corpo robusto com focinho preênsil característico e pelagem escura nos adultos. Os filhotes nascem com listras e pontos brancos que desaparecem com o crescimento. Solitária e de hábitos crepusculares.",
+        descriptionEn: "The largest land mammal in South America. Robust body with a characteristic prehensile snout and dark coat in adults. Young are born with stripes and white spots that fade as they grow. Solitary with crepuscular habits.",
+        facts: [
+          { label: "Comprimento", value: "1,8–2,5 m"                       },
+          { label: "Peso",        value: "150–300 kg"                      },
+          { label: "Dieta",       value: "Folhas, frutos e gramíneas"      },
+          { label: "Hábitat",     value: "Mata Atlântica / Cerrado"        },
+          { label: "Hábitos",     value: "Crepuscular, solitária"          },
+          { label: "Status IUCN", value: "Vulnerável"                      },
+        ],
+        services:   "Conhecida como o 'jardineiro da floresta', dispersa sementes de grande porte ao longo de seus vastos deslocamentos noturnos. Seus rastros e trilhas no solo também facilitam o acesso de outras espécies a recursos alimentares, sendo espécie-chave para a regeneração florestal.",
+        servicesEn: "Known as the 'gardener of the forest', it disperses large seeds across its vast nocturnal movements. Its trails and tracks also facilitate access by other species to food resources, making it a keystone species for forest regeneration.",
+        media: [
+          { type: "image", src: "imagens/Fotos do Carrossel/anta carrossel.png"   },
+          { type: "image", src: "imagens/Fotos do Carrossel/anta carrossel 2.png" },
+          { type: "image", src: "imagens/Fotos do Carrossel/anta carrossel 3.png" },
+          { type: "image", src: "imagens/Fotos do Carrossel/anta carrossel 4.png" },
+        ],
+      },
+    },
+    {
+      name: "Arara-vermelha-grande", nameEn: "Scarlet Macaw",
+      sci:  "Ara macao",
+      img:  "imagens/Foto de perfil animais/arara-grande-vermelha perfil.png",
+      profile: {
+        description:   "Uma das aves mais exuberantes das Américas, com plumagem vermelha vibrante, asas azuis e amarelas e longa cauda. Vive em pares ou grupos ruidosos nas copas das florestas. Sua vocalização forte marca o amanhecer e entardecer da reserva.",
+        descriptionEn: "One of the most spectacular birds of the Americas, with vibrant red plumage, blue and yellow wings, and a long tail. Lives in pairs or noisy groups in forest canopies. Its loud vocalization marks the dawn and dusk of the reserve.",
+        facts: [
+          { label: "Comprimento", value: "81–96 cm"                         },
+          { label: "Peso",        value: "900–1.100 g"                      },
+          { label: "Dieta",       value: "Frutos, sementes e flores"        },
+          { label: "Hábitat",     value: "Mata Atlântica / Cerrado"         },
+          { label: "Hábitos",     value: "Diurno, social"                   },
+          { label: "Status IUCN", value: "Pouco preocupante"                },
+        ],
+        services:   "Dispersa sementes de palmeiras e outras espécies de grande porte ao longo de grandes distâncias. Sua presença indica qualidade e integridade dos ecossistemas naturais, sendo considerada espécie bandeira para a conservação da Mata Atlântica.",
+        servicesEn: "Disperses seeds of palms and other large species across great distances. Its presence indicates the quality and integrity of natural ecosystems, being considered a flagship species for Atlantic Forest conservation.",
+        media: [
+          { type: "image", src: "imagens/Fotos do Carrossel/arara carrossel.png"   },
+          { type: "image", src: "imagens/Fotos do Carrossel/arara carrossel 2.png" },
+          { type: "image", src: "imagens/Fotos do Carrossel/arara carrossel 3.png" },
+        ],
+      },
+    },
+  ];
+  // ═══════════════════════════════════════════════════════════════════════════
+  // FIM DO CONFIG
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /* ── Fisher-Yates shuffle ─────────────────────────────────── */
+  function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  /* ── Custom Cursor ────────────────────────────────────────── */
+  const cursorEl = document.getElementById('cursor');
+
+  document.addEventListener('mousemove', e => {
+    cursorEl.style.left = e.clientX + 'px';
+    cursorEl.style.top  = e.clientY + 'px';
+    cursorEl.classList.add('visible');
+  });
+  document.addEventListener('mouseleave', () => cursorEl.classList.remove('visible'));
+  document.addEventListener('mouseover', e => {
+    const isInteractive = e.target.closest('button, .species-card, .carousel-dot, .lang-btn');
+    cursorEl.classList.toggle('hover', !!isInteractive);
+  });
+
+  /* ── Video Player — shuffle mode ──────────────────────────── */
+  const player    = document.getElementById('player');
+  const labelEl   = document.getElementById('video-label');
+  const labelText = document.getElementById('video-label-text');
+  const subName   = document.getElementById('video-sub-name');
+  const subSci    = document.getElementById('video-sub-sci');
+  let shuffledVideos = shuffle(VIDEOS);
+  let currentIdx  = 0;
+  let labelTimer  = null;
+
+  function showLabel(text) {
+    clearTimeout(labelTimer);
+    labelText.textContent = text;
+    labelEl.classList.add('visible');
+    labelTimer = setTimeout(() => labelEl.classList.remove('visible'), 4000);
+  }
+
+  function updateSubtitle(v) {
+    subName.style.opacity = '0';
+    subSci.style.opacity  = '0';
+    setTimeout(() => {
+      subName.textContent   = (lang === 'en' && v.speciesEn) ? v.speciesEn : (v.species || '');
+      subSci.textContent    = v.sci || '';
+      subName.style.opacity = '1';
+      subSci.style.opacity  = '1';
+    }, 380);
+  }
+
+  function playVideo(index) {
+    const v = shuffledVideos[index];
+    player.src = v.src;
+    player.load();
+    player.play().catch(() => {});
+    showLabel((lang === 'en' && v.labelEn) ? v.labelEn : v.label);
+    updateSubtitle(v);
+  }
+
+  function advanceVideo() {
+    currentIdx++;
+    if (currentIdx >= shuffledVideos.length) {
+      shuffledVideos = shuffle(VIDEOS);
+      currentIdx = 0;
+    }
+    playVideo(currentIdx);
+  }
+
+  player.addEventListener('ended', advanceVideo);
+  player.addEventListener('error', advanceVideo);
+
+  playVideo(0);
+
+  /* ── Species Panel ────────────────────────────────────────── */
+  const list = document.getElementById('species-list');
+
+  function renderSpeciesList() {
+    list.innerHTML = '';
+    const s = STRINGS[lang];
+    SPECIES.forEach((sp, i) => {
+      const card = document.createElement('div');
+      card.className = 'species-card';
+      card.dataset.index = i;
+      card.style.animationDelay = `${i * 55}ms`;
+      const displayName = (lang === 'en' && sp.nameEn) ? sp.nameEn : sp.name;
+      const thumbHTML = sp.img
+        ? `<img class="species-thumb" src="${sp.img}" alt="${sp.name}" onerror="this.outerHTML='<div class=\\'species-thumb-placeholder\\'>🌿</div>'">`
+        : `<div class="species-thumb-placeholder">🌿</div>`;
+      card.innerHTML = `
+        ${thumbHTML}
+        <div class="species-info">
+          <div class="species-name">${displayName}</div>
+          <div class="species-sci">${sp.sci}</div>
+          <button class="species-btn" tabindex="-1" aria-hidden="true">${s.learnMore}</button>
+        </div>`;
+      list.appendChild(card);
+    });
+  }
+
+  renderSpeciesList();
+
+  /* ── Profile Overlay ──────────────────────────────────────── */
+  const overlay  = document.getElementById('species-overlay');
+  const content  = document.getElementById('profile-content');
+  const closeBtn = document.getElementById('close-overlay');
+  let carouselIdx   = 0;
+  let carouselTotal = 0;
+
+  function buildProfile(sp) {
+    const p = sp.profile;
+    const s = STRINGS[lang];
+    const description = (lang === 'en' && p.descriptionEn) ? p.descriptionEn : p.description;
+    const services    = (lang === 'en' && p.servicesEn)    ? p.servicesEn    : p.services;
+    const displayName = (lang === 'en' && sp.nameEn)       ? sp.nameEn       : sp.name;
+
+    const factsHTML = p.facts.map(f => {
+      const label = s.factLabels[f.label] || f.label;
+      const value = (lang === 'en' && FACT_VALUE_EN[f.value]) ? FACT_VALUE_EN[f.value] : f.value;
+      return `
+        <div class="fact-item">
+          <span class="fact-label">${label}</span>
+          <span class="fact-value">${value}</span>
+        </div>`;
+    }).join('');
+
+    const mediaHTML = p.media.map((m, i) =>
+      m.type === 'video'
+        ? `<div class="carousel-item"><video src="${m.src}" muted playsinline loop ${i === 0 ? 'autoplay' : ''}></video></div>`
+        : `<div class="carousel-item"><img src="${m.src}" alt="${sp.name}" onerror="this.style.opacity='0'"></div>`
+    ).join('');
+
+    const navHTML = p.media.length > 1
+      ? `<button class="carousel-btn carousel-prev" id="c-prev">&#8249;</button>
+         <button class="carousel-btn carousel-next" id="c-next">&#8250;</button>`
+      : '';
+
+    const dotsHTML = p.media.length > 1
+      ? `<div class="carousel-dots" id="c-dots">
+           ${p.media.map((_, i) => `<button class="carousel-dot ${i === 0 ? 'active' : ''}" data-dot="${i}" aria-label="Slide ${i + 1}"></button>`).join('')}
+         </div>`
+      : '';
+
+    const heroImg = sp.img
+      ? `<img class="profile-hero-img" src="${sp.img}" alt="${sp.name}" onerror="this.style.opacity='0'">`
+      : '';
+
+    return `
+      <div class="profile-layout">
+        <div class="profile-left">
+          ${heroImg}
+          <div class="profile-left-overlay">
+            <h1 class="profile-hero-name">${displayName}</h1>
+            <p class="profile-hero-sci">${sp.sci}</p>
+          </div>
+        </div>
+        <div class="profile-right">
+          <p class="profile-description">${description}</p>
+          <div class="profile-facts">${factsHTML}</div>
+          <div class="profile-services">
+            <h3 class="profile-section-title">${s.ecoServices}</h3>
+            <p>${services}</p>
+          </div>
+          <div class="profile-gallery">
+            <div class="carousel-wrap" id="c-wrap">
+              <div class="carousel-track" id="c-track">${mediaHTML}</div>
+              ${navHTML}
+            </div>
+            ${dotsHTML}
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function syncCarouselVideos(activeIdx) {
+    document.querySelectorAll('.carousel-item').forEach((item, i) => {
+      const v = item.querySelector('video');
+      if (!v) return;
+      if (i === activeIdx) { v.play().catch(() => {}); }
+      else                 { v.pause(); }
+    });
+  }
+
+  function moveCarousel(idx) {
+    carouselIdx = ((idx % carouselTotal) + carouselTotal) % carouselTotal;
+    const track = document.getElementById('c-track');
+    if (track) track.style.transform = `translateX(-${carouselIdx * 100}%)`;
+    document.querySelectorAll('.carousel-dot').forEach((d, i) =>
+      d.classList.toggle('active', i === carouselIdx)
+    );
+    syncCarouselVideos(carouselIdx);
+  }
+
+  /* Entire card is now clickable */
+  list.addEventListener('click', e => {
+    const card = e.target.closest('.species-card');
+    if (!card) return;
+    const sp = SPECIES[+card.dataset.index];
+    if (!sp) return;
+    carouselIdx   = 0;
+    carouselTotal = sp.profile.media.length;
+    content.innerHTML = buildProfile(sp);
+    overlay.classList.add('visible');
+    overlay.setAttribute('aria-hidden', 'false');
+
+    const prev = document.getElementById('c-prev');
+    const next = document.getElementById('c-next');
+    const dots = document.getElementById('c-dots');
+    const wrap = document.getElementById('c-wrap');
+
+    if (prev) prev.addEventListener('click', () => moveCarousel(carouselIdx - 1));
+    if (next) next.addEventListener('click', () => moveCarousel(carouselIdx + 1));
+
+    if (dots) {
+      dots.addEventListener('click', e => {
+        const dot = e.target.closest('.carousel-dot');
+        if (dot) moveCarousel(+dot.dataset.dot);
+      });
+    }
+
+    if (wrap && carouselTotal > 1) {
+      let touchStartX = 0;
+      wrap.addEventListener('touchstart', e => {
+        touchStartX = e.touches[0].clientX;
+      }, { passive: true });
+      wrap.addEventListener('touchend', e => {
+        const delta = touchStartX - e.changedTouches[0].clientX;
+        if (Math.abs(delta) > 40) moveCarousel(carouselIdx + (delta > 0 ? 1 : -1));
+      }, { passive: true });
+    }
+  });
+
+  closeBtn.addEventListener('click', () => {
+    overlay.classList.remove('visible');
+    overlay.setAttribute('aria-hidden', 'true');
+    setTimeout(() => { content.innerHTML = ''; }, 400);
+  });
+
+  /* ── Language Toggle ──────────────────────────────────────── */
+  document.getElementById('lang-toggle').addEventListener('click', e => {
+    const btn = e.target.closest('.lang-btn');
+    if (!btn || btn.dataset.lang === lang) return;
+    lang = btn.dataset.lang;
+
+    document.getElementById('html-root').lang = lang === 'pt' ? 'pt-BR' : 'en';
+    document.querySelectorAll('.lang-btn').forEach(b =>
+      b.classList.toggle('active', b.dataset.lang === lang)
+    );
+
+    const s = STRINGS[lang];
+    document.getElementById('panel-subtitle').textContent = s.subtitle;
+    document.getElementById('panel-tagline').innerHTML    = s.tagline;
+    closeBtn.innerHTML = s.close;
+
+    renderSpeciesList();
+
+    // Close any open profile
+    overlay.classList.remove('visible');
+    overlay.setAttribute('aria-hidden', 'true');
+    setTimeout(() => { content.innerHTML = ''; }, 400);
+
+    // Update video subtitle immediately with current lang
+    updateSubtitle(shuffledVideos[currentIdx]);
+  });
+
+  /* ── Screen Wake Lock ─────────────────────────────────────── */
+  async function requestWakeLock() {
+    try { if ('wakeLock' in navigator) await navigator.wakeLock.request('screen'); } catch (_) {}
+  }
+  requestWakeLock();
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') requestWakeLock();
+  });
+
+  /* ── Kiosk Lockdown ───────────────────────────────────────── */
+  document.addEventListener('contextmenu', e => e.preventDefault());
+  document.addEventListener('keydown', e => {
+    const blocked = ['F1','F2','F3','F4','F5','F6','F7','F8','F9','F10','F11','F12','Tab','Escape'];
+    if (blocked.includes(e.key)) { e.preventDefault(); return; }
+    if (e.altKey || e.ctrlKey || e.metaKey) e.preventDefault();
+  });
+  document.addEventListener('selectstart', e => e.preventDefault());
+  document.addEventListener('dragstart',   e => e.preventDefault());
+  document.addEventListener('touchmove', e => {
+    if (e.target.closest('#species-list'))    return;
+    if (e.target.closest('#species-overlay')) return;
+    e.preventDefault();
+  }, { passive: false });
+  </script>
+</body>
+</html>

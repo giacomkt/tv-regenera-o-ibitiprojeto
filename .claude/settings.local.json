@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(unzip -p \"Painel regeneração - Informações textuais e observações.odt\" content.xml)"
+    ]
+  }
+}
