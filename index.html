@@ -517,6 +517,7 @@
       #species-panel { flex: none; height: 45vh; max-width: 100%; min-width: 0; border-left: none; border-top: 1px solid var(--border); }
     }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1/dist/hls.min.js"></script>
 </head>
 <body>
 
@@ -658,44 +659,43 @@
   // VÍDEOS — apenas arquivos existentes na pasta "videos/"
   // ═══════════════════════════════════════════════════════════════════════════
   const VIDEOS = [
-    { src: "videos/jaguatirica.mp4",              label: "Câmera Trilha",         labelEn: "Trail Camera",           species: "Jaguatirica",          speciesEn: "Ocelot",                sci: "Leopardus pardalis"      },
-    { src: "videos/Jaguatirica 2.mp4",            label: "Câmera Mata Densa",     labelEn: "Dense Forest Camera",    species: "Jaguatirica",          speciesEn: "Ocelot",                sci: "Leopardus pardalis"      },
-    { src: "videos/Jaguatirica 3.mp4",            label: "Câmera Trilha Norte",   labelEn: "North Trail Camera",     species: "Jaguatirica",          speciesEn: "Ocelot",                sci: "Leopardus pardalis"      },
-    { src: "videos/Jaguatirica 4.mp4",            label: "Câmera Rio",            labelEn: "River Camera",           species: "Jaguatirica",          speciesEn: "Ocelot",                sci: "Leopardus pardalis"      },
-    { src: "videos/Jaguatirica 5.mp4",            label: "Câmera Bambuzal",       labelEn: "Bamboo Grove Camera",    species: "Jaguatirica",          speciesEn: "Ocelot",                sci: "Leopardus pardalis"      },
-    { src: "videos/cachorro-do-mato.mp4",         label: "Câmera Mata Ciliar",    labelEn: "Riparian Camera",        species: "Cachorro-do-mato",     speciesEn: "Crab-eating Fox",       sci: "Cerdocyon thous"         },
-    { src: "videos/Cachorro-do-mato 3.mp4",       label: "Câmera Borda de Mata",  labelEn: "Forest Edge Camera",     species: "Cachorro-do-mato",     speciesEn: "Crab-eating Fox",       sci: "Cerdocyon thous"         },
-    { src: "videos/Cachorro-do-mato 4.mp4",       label: "Câmera Ciliar Sul",     labelEn: "South Riparian Camera",  species: "Cachorro-do-mato",     speciesEn: "Crab-eating Fox",       sci: "Cerdocyon thous"         },
-    { src: "videos/cateto.mp4",                   label: "Câmera Bosque Norte",   labelEn: "North Grove Camera",     species: "Cateto",               speciesEn: "Collared Peccary",      sci: "Pecari tajacu"           },
-    { src: "videos/Cateto 2.mp4",                 label: "Câmera Sub-bosque",     labelEn: "Understory Camera",      species: "Cateto",               speciesEn: "Collared Peccary",      sci: "Pecari tajacu"           },
-    { src: "videos/quati.mp4",                    label: "Câmera Cachoeira",      labelEn: "Waterfall Camera",       species: "Quati",                speciesEn: "South American Coati",  sci: "Nasua nasua"             },
-    { src: "videos/Quati 5.mp4",                  label: "Câmera Bosque",         labelEn: "Grove Camera",           species: "Quati",                speciesEn: "South American Coati",  sci: "Nasua nasua"             },
-    { src: "videos/carcara.mp4",                  label: "Câmera Mirante",        labelEn: "Lookout Camera",         species: "Carcará",              speciesEn: "Southern Caracara",     sci: "Caracara plancus"        },
-    { src: "videos/gato-do-mato-pequeno.mp4",     label: "Câmera Mata Densa",     labelEn: "Dense Forest Camera",    species: "Gato-do-mato-pequeno", speciesEn: "Oncilla",               sci: "Leopardus tigrinus"      },
-    { src: "videos/lobo-guará.mp4",               label: "Câmera Campo Aberto",   labelEn: "Open Field Camera",      species: "Lobo-guará",           speciesEn: "Maned Wolf",            sci: "Chrysocyon brachyurus"   },
-    { src: "videos/onça-parda.mp4",               label: "Câmera Trilha Sul",     labelEn: "South Trail Camera",     species: "Onça-parda",           speciesEn: "Puma",                  sci: "Puma concolor"           },
-    { src: "videos/Onça parda 2.mp4",             label: "Câmera Bosque",         labelEn: "Grove Camera",           species: "Onça-parda",           speciesEn: "Puma",                  sci: "Puma concolor"           },
-    { src: "videos/Onça-parda 2.MP4",             label: "Câmera Mata Fechada",   labelEn: "Dense Forest Camera",    species: "Onça-parda",           speciesEn: "Puma",                  sci: "Puma concolor"           },
-    { src: "videos/Onça-parda 3.mp4",             label: "Câmera Trilha Norte",   labelEn: "North Trail Camera",     species: "Onça-parda",           speciesEn: "Puma",                  sci: "Puma concolor"           },
-    { src: "videos/Onça-parda 4.mp4",             label: "Câmera Ciliar",         labelEn: "Riparian Camera",        species: "Onça-parda",           speciesEn: "Puma",                  sci: "Puma concolor"           },
-    { src: "videos/Onça-parda 5.mp4",             label: "Câmera Cerrado",        labelEn: "Cerrado Camera",         species: "Onça-parda",           speciesEn: "Puma",                  sci: "Puma concolor"           },
-    { src: "videos/Onça-parda 6.mp4",             label: "Câmera Campo",          labelEn: "Field Camera",           species: "Onça-parda",           speciesEn: "Puma",                  sci: "Puma concolor"           },
-    { src: "videos/Onça-parda 7.mp4",             label: "Câmera Rio",            labelEn: "River Camera",           species: "Onça-parda",           speciesEn: "Puma",                  sci: "Puma concolor"           },
-    { src: "videos/tamanduá-mirim.mp4",           label: "Câmera Bosque",         labelEn: "Grove Camera",           species: "Tamanduá-mirim",       speciesEn: "Southern Tamandua",     sci: "Tamandua tetradactyla"   },
-    { src: "videos/Veado 1.mp4",                  label: "Câmera Campo Norte",    labelEn: "North Field Camera",     species: "Veado-campeiro",       speciesEn: "Pampas Deer",           sci: "Ozotoceros bezoarticus"  },
-    { src: "videos/Veado 3..mp4",                 label: "Câmera Cerrado Sul",    labelEn: "South Cerrado Camera",   species: "Veado-campeiro",       speciesEn: "Pampas Deer",           sci: "Ozotoceros bezoarticus"  },
-    { src: "videos/Veado 4.mp4",                  label: "Câmera Pastagem Leste", labelEn: "East Pasture Camera",    species: "Veado-campeiro",       speciesEn: "Pampas Deer",           sci: "Ozotoceros bezoarticus"  },
-    { src: "videos/Paca.mp4",                     label: "Câmera Mata Noturna",   labelEn: "Night Forest Camera",    species: "Paca",                 speciesEn: "Spotted Paca",          sci: "Cuniculus paca"          },
-    { src: "videos/Juriti.mp4",                   label: "Câmera Mata Ciliar",    labelEn: "Riparian Camera",        species: "Juriti",               speciesEn: "White-tipped Dove",     sci: "Leptotila verreauxi"     },
-    { src: "videos/Tapiti.MP4",                   label: "Câmera Sub-bosque",     labelEn: "Understory Camera",      species: "Tapiti",               speciesEn: "Brazilian Cottontail",  sci: "Sylvilagus brasiliensis" },
-    { src: "videos/Tapiti 2.MP4",                 label: "Câmera Borda de Mata",  labelEn: "Forest Edge Camera",     species: "Tapiti",               speciesEn: "Brazilian Cottontail",  sci: "Sylvilagus brasiliensis" },
-    { src: "videos/Jacu.mp4",                     label: "Câmera Mata Ciliar",    labelEn: "Riparian Camera",        species: "Jacu",                 speciesEn: "Dusky-legged Guan",     sci: "Penelope obscura"        },
-    { src: "videos/Jacu 2.mp4",                   label: "Câmera Trilha",         labelEn: "Trail Camera",           species: "Jacu",                 speciesEn: "Dusky-legged Guan",     sci: "Penelope obscura"        },
-    { src: "videos/Muriqui do Norte.mp4",         label: "Câmera Dossel",         labelEn: "Canopy Camera",          species: "Muriqui-do-norte",     speciesEn: "Northern Muriqui",      sci: "Brachyteles hypoxanthus" },
-    { src: "videos/Muriqui do Norte .mp4",        label: "Câmera Mata Alta",      labelEn: "Tall Forest Camera",     species: "Muriqui-do-norte",     speciesEn: "Northern Muriqui",      sci: "Brachyteles hypoxanthus" },
-    { src: "videos/furões vídeo.mp4",             label: "Câmera Campo",          labelEn: "Field Camera",           species: "Furão",                speciesEn: "Lesser Grison",         sci: "Galictis cuja"           },
-    { src: "videos/tatu galinha e filhote.mp4",   label: "Câmera Borda de Mata",  labelEn: "Forest Edge Camera",     species: "Tatu",                 speciesEn: "Nine-banded Armadillo", sci: "Dasypus novemcinctus"    },
-    { src: "videos/tatu galinha estrada.mp4",     label: "Câmera Estrada",        labelEn: "Road Camera",            species: "Tatu",                 speciesEn: "Nine-banded Armadillo", sci: "Dasypus novemcinctus"    },
+    { src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/0d11e86a529d86b29b6b1a8559233b72/manifest/video.m3u8",              label: "Câmera Trilha",         labelEn: "Trail Camera",           species: "Jaguatirica",          speciesEn: "Ocelot",                sci: "Leopardus pardalis"      },
+    { src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/a235c22e96b95eac634532bb1839743b/manifest/video.m3u8",            label: "Câmera Mata Densa",     labelEn: "Dense Forest Camera",    species: "Jaguatirica",          speciesEn: "Ocelot",                sci: "Leopardus pardalis"      },
+    { src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/03679da8fb7cdbc7a4a3ca41177c3ed3/manifest/video.m3u8",            label: "Câmera Trilha Norte",   labelEn: "North Trail Camera",     species: "Jaguatirica",          speciesEn: "Ocelot",                sci: "Leopardus pardalis"      },
+    { src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/7a5c30674926db83914a5fba2c4da513/manifest/video.m3u8",            label: "Câmera Rio",            labelEn: "River Camera",           species: "Jaguatirica",          speciesEn: "Ocelot",                sci: "Leopardus pardalis"      },
+    { src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/5696335b08fb23655c41b6db9c2842de/manifest/video.m3u8",            label: "Câmera Bambuzal",       labelEn: "Bamboo Grove Camera",    species: "Jaguatirica",          speciesEn: "Ocelot",                sci: "Leopardus pardalis"      },
+    { src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/02573f6d7c505e95b5ccebdfb60d57dc/manifest/video.m3u8",         label: "Câmera Mata Ciliar",    labelEn: "Riparian Camera",        species: "Cachorro-do-mato",     speciesEn: "Crab-eating Fox",       sci: "Cerdocyon thous"         },
+    { src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/fa712b23763f78fb229984da03ace7ae/manifest/video.m3u8",       label: "Câmera Borda de Mata",  labelEn: "Forest Edge Camera",     species: "Cachorro-do-mato",     speciesEn: "Crab-eating Fox",       sci: "Cerdocyon thous"         },
+    { src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/921880d76a8910b42111d723620d21bc/manifest/video.m3u8",       label: "Câmera Ciliar Sul",     labelEn: "South Riparian Camera",  species: "Cachorro-do-mato",     speciesEn: "Crab-eating Fox",       sci: "Cerdocyon thous"         },
+    { src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/8dabeff370ee4856639ba6673d32a1a2/manifest/video.m3u8",                   label: "Câmera Bosque Norte",   labelEn: "North Grove Camera",     species: "Cateto",               speciesEn: "Collared Peccary",      sci: "Pecari tajacu"           },
+    { src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/79ac2c0273ef71a9b6fb1e0e877deba5/manifest/video.m3u8",                 label: "Câmera Sub-bosque",     labelEn: "Understory Camera",      species: "Cateto",               speciesEn: "Collared Peccary",      sci: "Pecari tajacu"           },
+    { src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/3725842e557bc5071812922024e60c34/manifest/video.m3u8",                    label: "Câmera Cachoeira",      labelEn: "Waterfall Camera",       species: "Quati",                speciesEn: "South American Coati",  sci: "Nasua nasua"             },
+    { src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/6bdb333443bd3ee290c4d07dc3c72b8e/manifest/video.m3u8",                  label: "Câmera Bosque",         labelEn: "Grove Camera",           species: "Quati",                speciesEn: "South American Coati",  sci: "Nasua nasua"             },
+    { src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/5573c0a1fddb9764831195f4c8c660da/manifest/video.m3u8",                  label: "Câmera Mirante",        labelEn: "Lookout Camera",         species: "Carcará",              speciesEn: "Southern Caracara",     sci: "Caracara plancus"        },
+    { src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/41b2935d85d269b5c444ffbf044bdd52/manifest/video.m3u8",     label: "Câmera Mata Densa",     labelEn: "Dense Forest Camera",    species: "Gato-do-mato-pequeno", speciesEn: "Oncilla",               sci: "Leopardus tigrinus"      },
+    { src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/b5d4a2da403eb354fceb56f9d46d3834/manifest/video.m3u8",               label: "Câmera Campo Aberto",   labelEn: "Open Field Camera",      species: "Lobo-guará",           speciesEn: "Maned Wolf",            sci: "Chrysocyon brachyurus"   },
+    { src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/9e556654edb91284fe41238d60ea3b6c/manifest/video.m3u8",               label: "Câmera Trilha Sul",     labelEn: "South Trail Camera",     species: "Onça-parda",           speciesEn: "Puma",                  sci: "Puma concolor"           },
+    { src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/e346cfcce9222ea32f0d3edbfaa0e46d/manifest/video.m3u8",             label: "Câmera Bosque",         labelEn: "Grove Camera",           species: "Onça-parda",           speciesEn: "Puma",                  sci: "Puma concolor"           },
+    { src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/e346cfcce9222ea32f0d3edbfaa0e46d/manifest/video.m3u8",             label: "Câmera Mata Fechada",   labelEn: "Dense Forest Camera",    species: "Onça-parda",           speciesEn: "Puma",                  sci: "Puma concolor"           },
+    { src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/bebd944105053151305ed6ac163c1c9d/manifest/video.m3u8",             label: "Câmera Trilha Norte",   labelEn: "North Trail Camera",     species: "Onça-parda",           speciesEn: "Puma",                  sci: "Puma concolor"           },
+    { src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/0fc26680aeed367b856d26e576feaf56/manifest/video.m3u8",             label: "Câmera Cerrado",        labelEn: "Cerrado Camera",         species: "Onça-parda",           speciesEn: "Puma",                  sci: "Puma concolor"           },
+    { src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/af7804fcd20ab2c0429c2e9500577e93/manifest/video.m3u8",             label: "Câmera Campo",          labelEn: "Field Camera",           species: "Onça-parda",           speciesEn: "Puma",                  sci: "Puma concolor"           },
+    { src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/89252b6e7b93a163a677e0372a82b423/manifest/video.m3u8",             label: "Câmera Rio",            labelEn: "River Camera",           species: "Onça-parda",           speciesEn: "Puma",                  sci: "Puma concolor"           },
+    { src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/c4e544fc768adb760aaa4ec6c927a43e/manifest/video.m3u8",           label: "Câmera Bosque",         labelEn: "Grove Camera",           species: "Tamanduá-mirim",       speciesEn: "Southern Tamandua",     sci: "Tamandua tetradactyla"   },
+    { src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/451f04f8c871bef544114985559f3b96/manifest/video.m3u8",                  label: "Câmera Campo Norte",    labelEn: "North Field Camera",     species: "Veado-campeiro",       speciesEn: "Pampas Deer",           sci: "Ozotoceros bezoarticus"  },
+    { src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/08549e01b10502ed864308feb3755f2e/manifest/video.m3u8",                 label: "Câmera Cerrado Sul",    labelEn: "South Cerrado Camera",   species: "Veado-campeiro",       speciesEn: "Pampas Deer",           sci: "Ozotoceros bezoarticus"  },
+    { src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/bca0131132dd05744c24238db904f944/manifest/video.m3u8",                  label: "Câmera Pastagem Leste", labelEn: "East Pasture Camera",    species: "Veado-campeiro",       speciesEn: "Pampas Deer",           sci: "Ozotoceros bezoarticus"  },
+    { src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/72d07290ac539acd179a432724719dac/manifest/video.m3u8",                     label: "Câmera Mata Noturna",   labelEn: "Night Forest Camera",    species: "Paca",                 speciesEn: "Spotted Paca",          sci: "Cuniculus paca"          },
+    { src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/b23d1abea38e0d8762c73513fadd3259/manifest/video.m3u8",                   label: "Câmera Mata Ciliar",    labelEn: "Riparian Camera",        species: "Juriti",               speciesEn: "White-tipped Dove",     sci: "Leptotila verreauxi"     },
+    { src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/c586953de4ee2f65d018fb3b7fc7cc1e/manifest/video.m3u8",                   label: "Câmera Sub-bosque",     labelEn: "Understory Camera",      species: "Tapiti",               speciesEn: "Brazilian Cottontail",  sci: "Sylvilagus brasiliensis" },
+    { src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/f8ef80527bdb6ac1a72d9eab2510611d/manifest/video.m3u8",                 label: "Câmera Borda de Mata",  labelEn: "Forest Edge Camera",     species: "Tapiti",               speciesEn: "Brazilian Cottontail",  sci: "Sylvilagus brasiliensis" },
+    { src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/2a5907b8e14d9115287ecb22e964fbd2/manifest/video.m3u8",                     label: "Câmera Mata Ciliar",    labelEn: "Riparian Camera",        species: "Jacu",                 speciesEn: "Dusky-legged Guan",     sci: "Penelope obscura"        },
+    { src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/46532e7acd373f12c7ac407880e3f7a1/manifest/video.m3u8",                   label: "Câmera Trilha",         labelEn: "Trail Camera",           species: "Jacu",                 speciesEn: "Dusky-legged Guan",     sci: "Penelope obscura"        },
+    { src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/dcb38f2fbefc6fba6e58b8d954ffe3a2/manifest/video.m3u8",         label: "Câmera Dossel",         labelEn: "Canopy Camera",          species: "Muriqui-do-norte",     speciesEn: "Northern Muriqui",      sci: "Brachyteles hypoxanthus" },
+    { src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/dcb38f2fbefc6fba6e58b8d954ffe3a2/manifest/video.m3u8",        label: "Câmera Mata Alta",      labelEn: "Tall Forest Camera",     species: "Muriqui-do-norte",     speciesEn: "Northern Muriqui",      sci: "Brachyteles hypoxanthus" },
+    { src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/c9a2ba7494115b785560c167948980af/manifest/video.m3u8",             label: "Câmera Campo",          labelEn: "Field Camera",           species: "Furão",                speciesEn: "Lesser Grison",         sci: "Galictis cuja"           },
+    { src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/711adac27a0088e1499ad697991be77f/manifest/video.m3u8",   label: "Câmera Borda de Mata",  labelEn: "Forest Edge Camera",     species: "Tatu",                 speciesEn: "Nine-banded Armadillo", sci: "Dasypus novemcinctus"    },
+    { src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/830fdc3d362952b88d19b16be5e99ce7/manifest/video.m3u8",     label: "Câmera Estrada",        labelEn: "Road Camera",            species: "Tatu",                 speciesEn: "Nine-banded Armadillo", sci: "Dasypus novemcinctus"    },
   ];
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -720,11 +720,11 @@
         services:   "Auxilia no controle populacional de pequenos e médios vertebrados, contribuindo para o equilíbrio das cadeias alimentares. Como predadora de topo em muitos ambientes, mantém a biodiversidade e a estabilidade ecológica dos ecossistemas naturais.",
         servicesEn: "Helps control populations of small and medium vertebrates, contributing to the balance of food chains. As a top predator in many environments, it maintains biodiversity and ecological stability in natural ecosystems.",
         media: [
-          { type: "video", src: "videos/jaguatirica.mp4"       },
-          { type: "video", src: "videos/Jaguatirica 2.mp4"     },
-          { type: "video", src: "videos/Jaguatirica 3.mp4"     },
-          { type: "video", src: "videos/Jaguatirica 4.mp4"     },
-          { type: "video", src: "videos/Jaguatirica 5.mp4"     },
+          { type: "video", src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/0d11e86a529d86b29b6b1a8559233b72/manifest/video.m3u8"       },
+          { type: "video", src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/a235c22e96b95eac634532bb1839743b/manifest/video.m3u8"     },
+          { type: "video", src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/03679da8fb7cdbc7a4a3ca41177c3ed3/manifest/video.m3u8"     },
+          { type: "video", src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/7a5c30674926db83914a5fba2c4da513/manifest/video.m3u8"     },
+          { type: "video", src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/5696335b08fb23655c41b6db9c2842de/manifest/video.m3u8"     },
         ],
       },
     },
@@ -746,9 +746,9 @@
         services:   "Desempenha importante função ecológica como dispersor de sementes e controlador de populações de pequenos animais e insetos. Por possuir dieta variada, contribui para o equilíbrio ecológico e a ciclagem de nutrientes nos ambientes em que vive.",
         servicesEn: "Plays an important ecological role as a seed disperser and controller of small animal and insect populations. Its varied diet contributes to ecological balance and nutrient cycling in the environments it inhabits.",
         media: [
-          { type: "video", src: "videos/cachorro-do-mato.mp4"     },
-          { type: "video", src: "videos/Cachorro-do-mato 3.mp4"   },
-          { type: "video", src: "videos/Cachorro-do-mato 4.mp4"   },
+          { type: "video", src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/02573f6d7c505e95b5ccebdfb60d57dc/manifest/video.m3u8"     },
+          { type: "video", src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/fa712b23763f78fb229984da03ace7ae/manifest/video.m3u8"   },
+          { type: "video", src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/921880d76a8910b42111d723620d21bc/manifest/video.m3u8"   },
         ],
       },
     },
@@ -770,8 +770,8 @@
         services:   "Engenheiro do ecossistema: ao cavar o solo em busca de raízes, aera a terra e cria microhabitats para germinação. Como presa, sustenta onças e pumas da reserva.",
         servicesEn: "Ecosystem engineer: by digging the soil in search of roots, it aerates the earth and creates microhabitats for germination. As prey, it sustains the jaguarundis and pumas of the reserve.",
         media: [
-          { type: "video", src: "videos/cateto.mp4"     },
-          { type: "video", src: "videos/Cateto 2.mp4"   },
+          { type: "video", src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/8dabeff370ee4856639ba6673d32a1a2/manifest/video.m3u8"     },
+          { type: "video", src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/79ac2c0273ef71a9b6fb1e0e877deba5/manifest/video.m3u8"   },
         ],
       },
     },
@@ -793,8 +793,8 @@
         services:   "Atua como dispersor de sementes, contribuindo para a regeneração das florestas. Ao revirar o folhiço, aerifica o solo e auxilia na ciclagem de nutrientes, mantendo o equilíbrio ecológico dos ambientes.",
         servicesEn: "Acts as a seed disperser, contributing to forest regeneration. By turning over leaf litter, it aerates the soil and aids in nutrient cycling, maintaining the ecological balance of the habitats it occupies.",
         media: [
-          { type: "video", src: "videos/quati.mp4"   },
-          { type: "video", src: "videos/Quati 5.mp4" },
+          { type: "video", src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/3725842e557bc5071812922024e60c34/manifest/video.m3u8"   },
+          { type: "video", src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/6bdb333443bd3ee290c4d07dc3c72b8e/manifest/video.m3u8" },
         ],
       },
     },
@@ -816,7 +816,7 @@
         services:   "Necrófago e predador oportunista, acelera a decomposição de carcaças reduzindo a proliferação de patógenos. Atua em múltiplos níveis da cadeia trófica, conferindo resiliência ao ecossistema.",
         servicesEn: "Scavenger and opportunistic predator, it accelerates the decomposition of carcasses, reducing the spread of pathogens. Acts at multiple levels of the food chain, conferring resilience to the ecosystem.",
         media: [
-          { type: "video", src: "videos/carcara.mp4" },
+          { type: "video", src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/5573c0a1fddb9764831195f4c8c660da/manifest/video.m3u8" },
         ],
       },
     },
@@ -838,7 +838,7 @@
         services:   "Controla populações de pequenos roedores e aves, regulando a base da cadeia alimentar. Sua raridade o torna indicador crítico da integridade dos remanescentes de Mata Atlântica.",
         servicesEn: "Controls populations of small rodents and birds, regulating the base of the food chain. Its rarity makes it a critical indicator of the integrity of remaining Atlantic Forest fragments.",
         media: [
-          { type: "video", src: "videos/gato-do-mato-pequeno.mp4" },
+          { type: "video", src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/41b2935d85d269b5c444ffbf044bdd52/manifest/video.m3u8" },
         ],
       },
     },
@@ -862,7 +862,7 @@
         media: [
           { type: "image", src: "imagens/Fotos do Carrossel/lobo guará carrossel.jpg"   },
           { type: "image", src: "imagens/Fotos do Carrossel/lobo guará carrossel 2.jpg" },
-          { type: "video", src: "videos/lobo-guará.mp4"   },
+          { type: "video", src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/b5d4a2da403eb354fceb56f9d46d3834/manifest/video.m3u8"   },
         ],
       },
     },
@@ -884,13 +884,12 @@
         services:   "Predadora de topo, controla populações de herbívoros como veados e capivaras, contribuindo para o equilíbrio ecológico. Sua presença é considerada um importante indicador da conservação dos ecossistemas naturais.",
         servicesEn: "Top predator, it controls populations of herbivores such as deer and capybaras, contributing to ecological balance. Its presence is considered an important indicator of the conservation of natural ecosystems.",
         media: [
-          { type: "video", src: "videos/onça-parda.mp4"     },
-          { type: "video", src: "videos/Onça-parda 2.MP4"   },
-          { type: "video", src: "videos/Onça-parda 3.mp4"   },
-          { type: "video", src: "videos/Onça-parda 4.mp4"   },
-          { type: "video", src: "videos/Onça-parda 5.mp4"   },
-          { type: "video", src: "videos/Onça-parda 6.mp4"   },
-          { type: "video", src: "videos/Onça-parda 7.mp4"   },
+          { type: "video", src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/9e556654edb91284fe41238d60ea3b6c/manifest/video.m3u8"     },
+          { type: "video", src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/e346cfcce9222ea32f0d3edbfaa0e46d/manifest/video.m3u8"   },
+          { type: "video", src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/bebd944105053151305ed6ac163c1c9d/manifest/video.m3u8"   },
+          { type: "video", src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/0fc26680aeed367b856d26e576feaf56/manifest/video.m3u8"   },
+          { type: "video", src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/af7804fcd20ab2c0429c2e9500577e93/manifest/video.m3u8"   },
+          { type: "video", src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/89252b6e7b93a163a677e0372a82b423/manifest/video.m3u8"   },
         ],
       },
     },
@@ -912,7 +911,7 @@
         services:   "Controla populações de formigas e cupins, ajudando no equilíbrio natural dos ecossistemas. Um único indivíduo consome até 9.000 insetos por dia. Sua presença indica a conservação de ambientes florestais com disponibilidade de alimento e abrigo.",
         servicesEn: "Controls populations of ants and termites, helping maintain the natural balance of ecosystems. A single individual consumes up to 9,000 insects per day. Its presence indicates the conservation of forested environments with available food and shelter.",
         media: [
-          { type: "video", src: "videos/tamanduá-mirim.mp4" },
+          { type: "video", src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/c4e544fc768adb760aaa4ec6c927a43e/manifest/video.m3u8" },
         ],
       },
     },
@@ -934,9 +933,9 @@
         services:   "Atua na dispersão de sementes e na manutenção da dinâmica da vegetação nativa, contribuindo para o equilíbrio de campos e savanas. Suas fezes enriquecem o solo e serve de presa para grandes predadores como a onça-parda.",
         servicesEn: "Contributes to seed dispersal and the dynamics of native vegetation, supporting the balance of grasslands and savannas. Its dung enriches the soil and it serves as prey for large predators such as the puma.",
         media: [
-          { type: "video", src: "videos/Veado 1.mp4"   },
-          { type: "video", src: "videos/Veado 3..mp4"  },
-          { type: "video", src: "videos/Veado 4.mp4"   },
+          { type: "video", src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/451f04f8c871bef544114985559f3b96/manifest/video.m3u8"   },
+          { type: "video", src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/08549e01b10502ed864308feb3755f2e/manifest/video.m3u8"  },
+          { type: "video", src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/bca0131132dd05744c24238db904f944/manifest/video.m3u8"   },
         ],
       },
     },
@@ -958,7 +957,7 @@
         services:   "Dispersora essencial de grandes sementes que poucos animais conseguem processar, contribuindo para a regeneração florestal. Suas tocas cavadas no solo servem de abrigo para diversas outras espécies, sendo um engenheiro do ecossistema.",
         servicesEn: "Essential disperser of large seeds that few animals can process, contributing to forest regeneration. Its burrows dug in the soil serve as shelter for many other species, making it a true ecosystem engineer.",
         media: [
-          { type: "video", src: "videos/Paca.mp4" },
+          { type: "video", src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/72d07290ac539acd179a432724719dac/manifest/video.m3u8" },
         ],
       },
     },
@@ -982,8 +981,8 @@
         media: [
           { type: "image", src: "imagens/Fotos do Carrossel/jacú carrossel.jpg"   },
           { type: "image", src: "imagens/Fotos do Carrossel/jacú carrossel 2.jpg" },
-          { type: "video", src: "videos/Jacu.mp4"   },
-          { type: "video", src: "videos/Jacu 2.mp4" },
+          { type: "video", src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/2a5907b8e14d9115287ecb22e964fbd2/manifest/video.m3u8"   },
+          { type: "video", src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/46532e7acd373f12c7ac407880e3f7a1/manifest/video.m3u8" },
         ],
       },
     },
@@ -1005,7 +1004,7 @@
         services:   "Atua na dispersão de sementes, contribuindo para a regeneração natural das florestas e a manutenção da diversidade vegetal. Também participa da cadeia alimentar, servindo de alimento para predadores naturais.",
         servicesEn: "Contributes to seed dispersal, supporting natural forest regeneration and the maintenance of plant diversity. Also participates in the food chain, serving as prey for natural predators.",
         media: [
-          { type: "video", src: "videos/Juriti.mp4" },
+          { type: "video", src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/b23d1abea38e0d8762c73513fadd3259/manifest/video.m3u8" },
         ],
       },
     },
@@ -1027,8 +1026,8 @@
         services:   "Atua como consumidor de vegetação e dispersor de sementes, auxiliando na dinâmica das plantas nativas. Também é fonte de alimento para diversos predadores, contribuindo para o equilíbrio das cadeias alimentares nos ecossistemas naturais.",
         servicesEn: "Acts as a vegetation consumer and seed disperser, aiding the dynamics of native plants. Also serves as a food source for various predators, contributing to the balance of food chains in natural ecosystems.",
         media: [
-          { type: "video", src: "videos/Tapiti.MP4"   },
-          { type: "video", src: "videos/Tapiti 2.MP4" },
+          { type: "video", src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/c586953de4ee2f65d018fb3b7fc7cc1e/manifest/video.m3u8"   },
+          { type: "video", src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/f8ef80527bdb6ac1a72d9eab2510611d/manifest/video.m3u8" },
         ],
       },
     },
@@ -1050,7 +1049,7 @@
         services:   "Auxilia no controle populacional de pequenos vertebrados e insetos, ajudando a manter o equilíbrio das cadeias alimentares. Por ocupar posição intermediária na cadeia trófica, também serve de alimento para predadores maiores.",
         servicesEn: "Helps control populations of small vertebrates and insects, maintaining the balance of food chains. By occupying an intermediate position in the food chain, it also serves as prey for larger predators.",
         media: [
-          { type: "video", src: "videos/furões vídeo.mp4" },
+          { type: "video", src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/c9a2ba7494115b785560c167948980af/manifest/video.m3u8" },
         ],
       },
     },
@@ -1072,8 +1071,8 @@
         services:   "Revolve e aera o solo durante a escavação de tocas e busca por alimento, favorecendo a ciclagem de nutrientes. Suas tocas servem de abrigo para diversas outras espécies, contribuindo para a biodiversidade dos ecossistemas.",
         servicesEn: "Turns over and aerates the soil while digging burrows and searching for food, promoting nutrient cycling. Its burrows serve as shelter for many other species, contributing to ecosystem biodiversity.",
         media: [
-          { type: "video", src: "videos/tatu galinha e filhote.mp4" },
-          { type: "video", src: "videos/tatu galinha estrada.mp4"   },
+          { type: "video", src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/711adac27a0088e1499ad697991be77f/manifest/video.m3u8" },
+          { type: "video", src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/830fdc3d362952b88d19b16be5e99ce7/manifest/video.m3u8"   },
         ],
       },
     },
@@ -1104,8 +1103,8 @@
           { type: "image", src: "imagens/Fotos do Carrossel/muriqui-do-norte carrossel 8.jpg"  },
           { type: "image", src: "imagens/Fotos do Carrossel/muriqui-do-norte carrossel 9.jpg"  },
           { type: "image", src: "imagens/Fotos do Carrossel/muriqui-do-norte carrossel 10.jpg" },
-          { type: "video", src: "videos/Muriqui do Norte.mp4"  },
-          { type: "video", src: "videos/Muriqui do Norte .mp4" },
+          { type: "video", src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/dcb38f2fbefc6fba6e58b8d954ffe3a2/manifest/video.m3u8"  },
+          { type: "video", src: "https://customer-dzhai5mdm8mfhwd1.cloudflarestream.com/dcb38f2fbefc6fba6e58b8d954ffe3a2/manifest/video.m3u8" },
         ],
       },
     },
@@ -1263,9 +1262,17 @@
 
   function playVideo(index) {
     const v = shuffledVideos[index];
-    player.src = v.src;
-    player.load();
-    player.play().catch(() => {});
+    if (window._hls) { window._hls.destroy(); window._hls = null; }
+    if (Hls.isSupported()) {
+      const hls = new Hls({ autoStartLoad: true });
+      hls.loadSource(v.src);
+      hls.attachMedia(player);
+      hls.on(Hls.Events.MANIFEST_PARSED, () => player.play().catch(() => {}));
+      window._hls = hls;
+    } else if (player.canPlayType('application/vnd.apple.mpegurl')) {
+      player.src = v.src;
+      player.play().catch(() => {});
+    }
     showLabel((lang === 'en' && v.labelEn) ? v.labelEn : v.label);
     updateSubtitle(v);
   }
@@ -1338,7 +1345,7 @@
 
     const mediaHTML = p.media.map((m, i) =>
       m.type === 'video'
-        ? `<div class="carousel-item"><video src="${m.src}" muted playsinline loop ${i === 0 ? 'autoplay' : ''}></video></div>`
+        ? `<div class="carousel-item"><video data-src="${m.src}" muted playsinline loop ${i === 0 ? 'autoplay' : ''}></video></div>`
         : `<div class="carousel-item"><img src="${m.src}" alt="${sp.name}" onerror="this.style.opacity='0'"></div>`
     ).join('');
 
@@ -1412,6 +1419,16 @@
     carouselIdx   = 0;
     carouselTotal = sp.profile.media.length;
     content.innerHTML = buildProfile(sp);
+    content.querySelectorAll('video[data-src]').forEach(vid => {
+      const src = vid.getAttribute('data-src');
+      if (Hls.isSupported()) {
+        const h = new Hls();
+        h.loadSource(src);
+        h.attachMedia(vid);
+      } else if (vid.canPlayType('application/vnd.apple.mpegurl')) {
+        vid.src = src;
+      }
+    });
     overlay.classList.add('visible');
     overlay.setAttribute('aria-hidden', 'false');
 
